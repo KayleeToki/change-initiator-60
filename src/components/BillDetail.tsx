@@ -6,24 +6,40 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Calendar, FileText, Users, Download, Link } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  Calendar, 
+  FileText, 
+  Users, 
+  Download, 
+  Link, 
+  AlertTriangle, 
+  History 
+} from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
+import ApiKeyForm from '@/components/ApiKeyForm';
 
 const BillDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [bill, setBill] = useState<Bill | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
     const fetchBill = async () => {
       if (id) {
         setLoading(true);
+        setError(null);
         try {
           const data = await getBillById(id);
           setBill(data);
-        } catch (error) {
-          console.error("Failed to fetch bill:", error);
+          if (!data) {
+            setError("Bill not found. It may have been removed or the ID is incorrect.");
+          }
+        } catch (err) {
+          console.error("Failed to fetch bill:", err);
+          setError("Failed to fetch bill details. Please try again later.");
         } finally {
           setLoading(false);
         }
@@ -43,6 +59,7 @@ const BillDetail = () => {
   };
   
   const formatDate = (dateString: string) => {
+    if (!dateString) return 'No date available';
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
@@ -75,7 +92,7 @@ const BillDetail = () => {
     );
   }
   
-  if (!bill) {
+  if (error || !bill) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
         <Button 
@@ -86,11 +103,14 @@ const BillDetail = () => {
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
         
-        <div className="max-w-4xl mx-auto text-center">
-          <Card className="w-full p-8">
-            <h2 className="text-2xl font-bold mb-4">Bill Not Found</h2>
+        <div className="max-w-4xl mx-auto">
+          <ApiKeyForm />
+          
+          <Card className="w-full p-8 mt-4 text-center">
+            <AlertTriangle className="h-12 w-12 text-orange-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold mb-4">{error || "Bill Not Found"}</h2>
             <p className="text-gray-600 mb-6">
-              The bill you are looking for could not be found. It may have been removed or the ID is incorrect.
+              {!error && "The bill you are looking for could not be found. It may have been removed or the ID is incorrect."}
             </p>
             <Button onClick={() => navigate(-1)}>
               Go Back
@@ -118,36 +138,39 @@ const BillDetail = () => {
               <Badge className={getUrgencyClass(bill.urgency)}>
                 {bill.urgency.charAt(0).toUpperCase() + bill.urgency.slice(1)} Priority
               </Badge>
-              <Badge variant="outline">{bill.id}</Badge>
+              <Badge variant="outline">{bill.bill_number}</Badge>
             </div>
             <CardTitle className="text-2xl">{bill.title}</CardTitle>
             <CardDescription className="text-gray-500">
               <span className="inline-flex items-center">
-                <Calendar className="h-4 w-4 mr-1" /> Vote expected: {formatDate(bill.expectedVoteDate)}
+                <Calendar className="h-4 w-4 mr-1" /> Last action: {formatDate(bill.last_action_date)}
               </span>
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="bg-gray-50 p-4 rounded-lg mb-6">
               <h3 className="font-semibold mb-2">Summary</h3>
-              <p className="text-gray-700">{bill.summary}</p>
+              <p className="text-gray-700">{bill.description || "No summary available."}</p>
             </div>
             
-            <div className="mb-6">
-              <h3 className="font-semibold mb-2 flex items-center">
-                <Users className="h-4 w-4 mr-1" /> Sponsors
-              </h3>
-              <ul className="list-disc list-inside text-gray-700">
-                {bill.sponsors.map((sponsor, index) => (
-                  <li key={index}>{sponsor}</li>
-                ))}
-              </ul>
-            </div>
+            {bill.sponsors && bill.sponsors.length > 0 && (
+              <div className="mb-6">
+                <h3 className="font-semibold mb-2 flex items-center">
+                  <Users className="h-4 w-4 mr-1" /> Sponsors
+                </h3>
+                <ul className="list-disc list-inside text-gray-700">
+                  {bill.sponsors.map((sponsor, index) => (
+                    <li key={index}>{sponsor.sponsor_name} ({sponsor.sponsor_type})</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             
             <Tabs defaultValue="details">
               <TabsList className="mb-4">
                 <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="media">Media & Documents</TabsTrigger>
+                <TabsTrigger value="history">History</TabsTrigger>
+                <TabsTrigger value="documents">Documents</TabsTrigger>
                 <TabsTrigger value="actions">Take Action</TabsTrigger>
               </TabsList>
               
@@ -166,65 +189,88 @@ const BillDetail = () => {
                     <p className="text-gray-700">{bill.county}</p>
                   </div>
                 )}
+                <div className="bg-white p-4 rounded-lg border">
+                  <h4 className="font-medium">Last Action</h4>
+                  <p className="text-gray-700">{bill.last_action}</p>
+                </div>
               </TabsContent>
               
-              <TabsContent value="media">
-                {bill.mediaUrls && Object.keys(bill.mediaUrls).length > 0 ? (
-                  <div className="space-y-4">
-                    {bill.mediaUrls.images && bill.mediaUrls.images.length > 0 && (
-                      <div className="bg-white p-4 rounded-lg border">
-                        <h4 className="font-medium mb-2">Images</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {bill.mediaUrls.images.map((url, index) => (
-                            <img 
-                              key={index} 
-                              src={url} 
-                              alt={`${bill.title} - image ${index + 1}`} 
-                              className="rounded-md w-full h-48 object-cover"
-                            />
-                          ))}
+              <TabsContent value="history">
+                {bill.history && bill.history.length > 0 ? (
+                  <div className="space-y-2">
+                    {bill.history.map((event, index) => (
+                      <div key={index} className="bg-white p-4 rounded-lg border">
+                        <div className="flex items-start gap-2">
+                          <History className="h-5 w-5 text-gray-500 mt-0.5" />
+                          <div>
+                            <p className="text-sm text-gray-500">{formatDate(event.date)}</p>
+                            <p className="font-medium">{event.action}</p>
+                            <p className="text-sm text-gray-700">Chamber: {event.chamber}</p>
+                          </div>
                         </div>
                       </div>
-                    )}
-                    
-                    {bill.mediaUrls.videos && bill.mediaUrls.videos.length > 0 && (
-                      <div className="bg-white p-4 rounded-lg border">
-                        <h4 className="font-medium mb-2">Videos</h4>
-                        <div className="space-y-2">
-                          {bill.mediaUrls.videos.map((url, index) => (
-                            <div key={index} className="aspect-video bg-gray-100 rounded-md flex items-center justify-center">
-                              <p className="text-gray-500">Video preview placeholder</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {bill.mediaUrls.documents && bill.mediaUrls.documents.length > 0 && (
-                      <div className="bg-white p-4 rounded-lg border">
-                        <h4 className="font-medium mb-2">Documents</h4>
-                        <div className="space-y-2">
-                          {bill.mediaUrls.documents.map((url, index) => (
-                            <Button 
-                              key={index} 
-                              variant="outline" 
-                              className="w-full justify-start"
-                              onClick={() => window.open(url, '_blank')}
-                            >
-                              <FileText className="h-4 w-4 mr-2" />
-                              <span className="mr-2">Document {index + 1}</span>
-                              <span className="text-blue-500 ml-auto">
-                                <Download className="h-4 w-4" />
-                              </span>
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    ))}
                   </div>
                 ) : (
                   <div className="text-center p-8 text-gray-500">
-                    <p>No media or documents available for this bill.</p>
+                    <p>No history available for this bill.</p>
+                  </div>
+                )}
+              </TabsContent>
+              
+              <TabsContent value="documents">
+                {bill.media?.documents && bill.media.documents.length > 0 ? (
+                  <div className="bg-white p-4 rounded-lg border">
+                    <h4 className="font-medium mb-2">Official Documents</h4>
+                    <div className="space-y-2">
+                      {bill.media.documents.map((url, index) => (
+                        <Button 
+                          key={index} 
+                          variant="outline" 
+                          className="w-full justify-start"
+                          onClick={() => window.open(url, '_blank')}
+                        >
+                          <FileText className="h-4 w-4 mr-2" />
+                          <span className="mr-2">Document {index + 1}</span>
+                          <span className="text-blue-500 ml-auto">
+                            <Download className="h-4 w-4" />
+                          </span>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                ) : bill.text_url ? (
+                  <div className="bg-white p-4 rounded-lg border">
+                    <h4 className="font-medium mb-2">Bill Text</h4>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start"
+                      onClick={() => window.open(bill.text_url, '_blank')}
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      <span className="mr-2">View Bill Text</span>
+                      <span className="text-blue-500 ml-auto">
+                        <Download className="h-4 w-4" />
+                      </span>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="text-center p-8 text-gray-500">
+                    <p>No documents available for this bill.</p>
+                  </div>
+                )}
+
+                {bill.url && (
+                  <div className="bg-white p-4 rounded-lg border mt-4">
+                    <h4 className="font-medium mb-2">Official Bill Page</h4>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start"
+                      onClick={() => window.open(bill.url, '_blank')}
+                    >
+                      <Link className="h-4 w-4 mr-2" />
+                      <span>Visit Official Bill Page</span>
+                    </Button>
                   </div>
                 )}
               </TabsContent>

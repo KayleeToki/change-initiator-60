@@ -1,27 +1,21 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ForumPost, getForumPosts, createForumPost } from '@/lib/api';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, MessageSquare, Heart, ThumbsUp, Plus, Image, Mic, Video } from 'lucide-react';
-import { Skeleton } from "@/components/ui/skeleton";
+import { ThumbsUp, MessageSquare, FileText, Upload, Mic, Video } from 'lucide-react';
+import { ForumPost, getForumPosts, createForumPost } from '@/lib/api';
+import { toast } from "sonner";
 
 const Forum = () => {
-  const navigate = useNavigate();
   const [posts, setPosts] = useState<ForumPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newPost, setNewPost] = useState({
-    title: '',
-    content: '',
-    mediaType: 'text' as 'text' | 'audio' | 'video',
-    mediaUrl: ''
-  });
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newPostTitle, setNewPostTitle] = useState('');
+  const [newPostContent, setNewPostContent] = useState('');
+  const [newPostMediaType, setNewPostMediaType] = useState<'text' | 'audio' | 'video'>('text');
+  const [newPostMediaUrl, setNewPostMediaUrl] = useState('');
   
   useEffect(() => {
     const fetchPosts = async () => {
@@ -30,7 +24,8 @@ const Forum = () => {
         const data = await getForumPosts();
         setPosts(data);
       } catch (error) {
-        console.error("Failed to fetch forum posts:", error);
+        console.error("Failed to fetch posts:", error);
+        toast.error("Failed to load forum posts. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -39,253 +34,221 @@ const Forum = () => {
     fetchPosts();
   }, []);
   
-  const handleSubmitPost = async () => {
-    if (!newPost.title || !newPost.content) {
+  const handleCreatePost = async () => {
+    if (!newPostTitle.trim()) {
+      toast.error("Please enter a title for your post.");
+      return;
+    }
+    
+    if (!newPostContent.trim()) {
+      toast.error("Please enter content for your post.");
       return;
     }
     
     try {
-      const createdPost = await createForumPost({
-        userId: 'user1', // In a real app, this would be the logged-in user's ID
-        username: 'CurrentUser', // In a real app, this would be the logged-in user's username
-        title: newPost.title,
-        content: newPost.content,
-        mediaType: newPost.mediaType,
-        mediaUrl: newPost.mediaUrl
-      });
+      const post = {
+        userId: "current-user", // In a real app, this would be the authenticated user's ID
+        username: "CurrentUser", // In a real app, this would be the authenticated user's username
+        title: newPostTitle,
+        content: newPostContent,
+        mediaType: newPostMediaType,
+        mediaUrl: newPostMediaUrl.trim() || undefined
+      };
       
+      const createdPost = await createForumPost(post);
       setPosts([createdPost, ...posts]);
-      setNewPost({
-        title: '',
-        content: '',
-        mediaType: 'text',
-        mediaUrl: ''
-      });
-      setIsDialogOpen(false);
+      
+      // Reset form
+      setNewPostTitle('');
+      setNewPostContent('');
+      setNewPostMediaType('text');
+      setNewPostMediaUrl('');
     } catch (error) {
       console.error("Failed to create post:", error);
+      toast.error("Failed to create post. Please try again later.");
     }
   };
   
   const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
   
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/')}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
-          </Button>
-          
-          <h1 className="text-3xl font-bold">Community Forum</h1>
-          
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" /> New Post
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[525px]">
-              <DialogHeader>
-                <DialogTitle>Create New Post</DialogTitle>
-                <DialogDescription>
-                  Share your thoughts, questions, or insights with the community.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="py-4">
-                <div className="mb-4">
-                  <label htmlFor="title" className="block text-sm font-medium mb-1">Title</label>
-                  <Input
-                    id="title"
-                    value={newPost.title}
-                    onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-                    placeholder="Enter a title for your post"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label htmlFor="content" className="block text-sm font-medium mb-1">Content</label>
-                  <Textarea
-                    id="content"
-                    value={newPost.content}
-                    onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
-                    placeholder="Write your post..."
-                    rows={5}
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Media Type</label>
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      variant={newPost.mediaType === 'text' ? 'default' : 'outline'}
-                      onClick={() => setNewPost({ ...newPost, mediaType: 'text', mediaUrl: '' })}
-                      className="flex-1"
-                    >
-                      <MessageSquare className="h-4 w-4 mr-2" /> Text
-                    </Button>
-                    <Button
-                      type="button"
-                      variant={newPost.mediaType === 'image' ? 'default' : 'outline'}
-                      onClick={() => setNewPost({ ...newPost, mediaType: 'image' as any, mediaUrl: '' })}
-                      className="flex-1"
-                    >
-                      <Image className="h-4 w-4 mr-2" /> Image
-                    </Button>
-                    <Button
-                      type="button"
-                      variant={newPost.mediaType === 'audio' ? 'default' : 'outline'}
-                      onClick={() => setNewPost({ ...newPost, mediaType: 'audio', mediaUrl: '' })}
-                      className="flex-1"
-                    >
-                      <Mic className="h-4 w-4 mr-2" /> Audio
-                    </Button>
-                    <Button
-                      type="button"
-                      variant={newPost.mediaType === 'video' ? 'default' : 'outline'}
-                      onClick={() => setNewPost({ ...newPost, mediaType: 'video', mediaUrl: '' })}
-                      className="flex-1"
-                    >
-                      <Video className="h-4 w-4 mr-2" /> Video
-                    </Button>
-                  </div>
-                </div>
-                {newPost.mediaType !== 'text' && (
-                  <div className="mb-4">
-                    <label htmlFor="mediaUrl" className="block text-sm font-medium mb-1">Media URL</label>
-                    <Input
-                      id="mediaUrl"
-                      value={newPost.mediaUrl}
-                      onChange={(e) => setNewPost({ ...newPost, mediaUrl: e.target.value })}
-                      placeholder={`Enter a URL for your ${newPost.mediaType}`}
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      In a real app, you would be able to upload media directly.
-                    </p>
-                  </div>
-                )}
-              </div>
-              <DialogFooter>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setIsDialogOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={handleSubmitPost}>
-                  Post
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
+        <h1 className="text-3xl font-bold mb-2">Community Forum</h1>
+        <p className="text-gray-600 mb-6">
+          Join the conversation about civic issues that matter to you.
+        </p>
         
-        <Tabs defaultValue="recent">
-          <TabsList className="mb-6">
-            <TabsTrigger value="recent">Recent</TabsTrigger>
-            <TabsTrigger value="popular">Popular</TabsTrigger>
-            <TabsTrigger value="bills">Bill Discussions</TabsTrigger>
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Create a New Post</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Input
+              placeholder="Post Title"
+              value={newPostTitle}
+              onChange={(e) => setNewPostTitle(e.target.value)}
+            />
+            <Textarea
+              placeholder="What's on your mind?"
+              value={newPostContent}
+              onChange={(e) => setNewPostContent(e.target.value)}
+              className="min-h-[120px]"
+            />
+            <div>
+              <p className="text-sm font-medium mb-2">Media Type</p>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant={newPostMediaType === 'text' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setNewPostMediaType('text')}
+                >
+                  <FileText className="h-4 w-4 mr-1" /> Text Only
+                </Button>
+                <Button
+                  type="button"
+                  variant={newPostMediaType === 'audio' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setNewPostMediaType('audio')}
+                >
+                  <Mic className="h-4 w-4 mr-1" /> Audio
+                </Button>
+                <Button
+                  type="button"
+                  variant={newPostMediaType === 'video' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setNewPostMediaType('video')}
+                >
+                  <Video className="h-4 w-4 mr-1" /> Video
+                </Button>
+              </div>
+            </div>
+            
+            {newPostMediaType !== 'text' && (
+              <div>
+                <p className="text-sm font-medium mb-2">Media URL</p>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder={`Enter ${newPostMediaType} URL`}
+                    value={newPostMediaUrl}
+                    onChange={(e) => setNewPostMediaUrl(e.target.value)}
+                  />
+                  <Button variant="outline" disabled>
+                    <Upload className="h-4 w-4 mr-1" /> Upload
+                  </Button>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  For demo purposes, you can enter any URL. In a production app, you would be able to upload files.
+                </p>
+              </div>
+            )}
+          </CardContent>
+          <CardFooter>
+            <Button onClick={handleCreatePost}>
+              Post
+            </Button>
+          </CardFooter>
+        </Card>
+        
+        <Tabs defaultValue="all">
+          <TabsList className="mb-4">
+            <TabsTrigger value="all">All Posts</TabsTrigger>
+            <TabsTrigger value="text">Text</TabsTrigger>
+            <TabsTrigger value="audio">Audio</TabsTrigger>
+            <TabsTrigger value="video">Video</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="recent">
-            {loading ? (
-              <div className="space-y-6">
-                {[1, 2, 3].map((i) => (
-                  <Card key={i}>
-                    <CardHeader>
-                      <Skeleton className="h-5 w-3/4" />
-                      <Skeleton className="h-4 w-1/3 mt-2" />
-                    </CardHeader>
-                    <CardContent>
-                      <Skeleton className="h-20 w-full" />
-                    </CardContent>
-                    <CardFooter>
-                      <Skeleton className="h-8 w-24" />
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
-            ) : posts.length > 0 ? (
-              <div className="space-y-6">
-                {posts.map((post) => (
-                  <Card key={post.id}>
-                    <CardHeader>
-                      <CardTitle className="text-xl">{post.title}</CardTitle>
-                      <div className="text-sm text-gray-500">
-                        Posted by {post.username} on {formatDate(post.createdAt)}
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-700">{post.content}</p>
-                      
-                      {post.mediaType === 'audio' && post.mediaUrl && (
-                        <div className="mt-4 bg-gray-100 p-4 rounded-md">
-                          <p className="text-sm text-gray-500 mb-2">Audio Attachment</p>
-                          <div className="flex items-center justify-center h-20 bg-gray-200 rounded-md">
-                            <Mic className="h-8 w-8 text-gray-400" />
-                          </div>
-                        </div>
-                      )}
-                      
-                      {post.mediaType === 'video' && post.mediaUrl && (
-                        <div className="mt-4 bg-gray-100 p-4 rounded-md">
-                          <p className="text-sm text-gray-500 mb-2">Video Attachment</p>
-                          <div className="flex items-center justify-center aspect-video bg-gray-200 rounded-md">
-                            <Video className="h-12 w-12 text-gray-400" />
-                          </div>
-                        </div>
-                      )}
-                    </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="sm" className="text-gray-500">
-                          <ThumbsUp className="h-4 w-4 mr-1" /> {post.likes}
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-gray-500">
-                          <MessageSquare className="h-4 w-4 mr-1" /> {post.comments}
-                        </Button>
-                      </div>
-                      <Button variant="outline" size="sm">
-                        View Discussion
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <Card className="w-full p-8 text-center">
-                <CardContent>
-                  <p className="text-gray-500">No posts yet. Be the first to start a discussion!</p>
-                  <Button className="mt-4" onClick={() => setIsDialogOpen(true)}>
-                    <Plus className="mr-2 h-4 w-4" /> Create a Post
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+          <TabsContent value="all">
+            {renderPosts(posts, loading, formatDate)}
           </TabsContent>
           
-          <TabsContent value="popular">
-            <Card className="w-full p-8 text-center">
-              <CardContent>
-                <p className="text-gray-500">Popular posts will appear here.</p>
-              </CardContent>
-            </Card>
+          <TabsContent value="text">
+            {renderPosts(posts.filter(post => post.mediaType === 'text' || !post.mediaType), loading, formatDate)}
           </TabsContent>
           
-          <TabsContent value="bills">
-            <Card className="w-full p-8 text-center">
-              <CardContent>
-                <p className="text-gray-500">Bill discussions will appear here.</p>
-              </CardContent>
-            </Card>
+          <TabsContent value="audio">
+            {renderPosts(posts.filter(post => post.mediaType === 'audio'), loading, formatDate)}
+          </TabsContent>
+          
+          <TabsContent value="video">
+            {renderPosts(posts.filter(post => post.mediaType === 'video'), loading, formatDate)}
           </TabsContent>
         </Tabs>
       </div>
+    </div>
+  );
+};
+
+// Helper function to render posts
+const renderPosts = (posts: ForumPost[], loading: boolean, formatDate: (date: string) => string) => {
+  if (loading) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-500">Loading posts...</p>
+      </div>
+    );
+  }
+  
+  if (posts.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-500">No posts found.</p>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="space-y-4">
+      {posts.map((post) => (
+        <Card key={post.id}>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-xl">{post.title}</CardTitle>
+                <p className="text-sm text-gray-500">
+                  Posted by {post.username} on {formatDate(post.createdAt)}
+                </p>
+              </div>
+              <Badge>{post.mediaType || 'text'}</Badge>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="whitespace-pre-line">{post.content}</p>
+            
+            {post.mediaType === 'audio' && post.mediaUrl && (
+              <div className="mt-4 bg-gray-100 p-4 rounded-lg">
+                <p className="text-sm font-medium mb-2">Audio Content</p>
+                <audio controls className="w-full">
+                  <source src={post.mediaUrl} type="audio/mpeg" />
+                  Your browser does not support the audio element.
+                </audio>
+              </div>
+            )}
+            
+            {post.mediaType === 'video' && post.mediaUrl && (
+              <div className="mt-4 bg-gray-100 p-4 rounded-lg">
+                <p className="text-sm font-medium mb-2">Video Content</p>
+                <video controls className="w-full rounded">
+                  <source src={post.mediaUrl} type="video/mp4" />
+                  Your browser does not support the video element.
+                </video>
+              </div>
+            )}
+          </CardContent>
+          <CardFooter className="flex justify-between text-gray-500 text-sm">
+            <Button variant="ghost" size="sm">
+              <ThumbsUp className="h-4 w-4 mr-1" /> {post.likes}
+            </Button>
+            <Button variant="ghost" size="sm">
+              <MessageSquare className="h-4 w-4 mr-1" /> {post.comments}
+            </Button>
+          </CardFooter>
+        </Card>
+      ))}
     </div>
   );
 };

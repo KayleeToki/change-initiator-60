@@ -1,23 +1,40 @@
-
-// API service for fetching legislative data
+// API service for fetching legislative data from LegiScan
 import { toast } from "sonner";
 
+// LegiScan API configuration
+const LEGISCAN_API_URL = "https://api.legiscan.com/";
+const LEGISCAN_API_KEY = ""; // This should be set by the user via UI
+
 export interface Bill {
-  id: string;
+  bill_id: string;
+  bill_number: string;
   title: string;
-  summary: string;
+  description: string;
   state: string;
+  state_id: number;
   county?: string;
   urgency: 'high' | 'medium' | 'low';
-  expectedVoteDate: string;
+  last_action_date: string;
+  last_action: string;
   status: string;
-  sponsors: string[];
-  mediaUrls?: {
+  sponsors: Array<{
+    sponsor_id: number;
+    sponsor_name: string;
+    sponsor_type: string;
+  }>;
+  media?: {
     images?: string[];
     videos?: string[];
     audio?: string[];
     documents?: string[];
   };
+  url?: string;
+  text_url?: string;
+  history?: Array<{
+    date: string;
+    action: string;
+    chamber: string;
+  }>;
 }
 
 export interface MutualAidResource {
@@ -44,89 +61,7 @@ export interface ForumPost {
   comments: number;
 }
 
-// Mock data for development - would be replaced with actual API calls
-const MOCK_BILLS: Bill[] = [
-  {
-    id: "SB1234",
-    title: "Clean Energy Act",
-    summary: "A bill to promote renewable energy sources and reduce carbon emissions.",
-    state: "California",
-    urgency: 'high',
-    expectedVoteDate: "2023-06-15",
-    status: "In committee",
-    sponsors: ["Sen. John Smith", "Sen. Jane Doe"],
-    mediaUrls: {
-      images: ["https://placehold.co/600x400?text=Clean+Energy"],
-      documents: ["https://example.com/bill-pdf"]
-    }
-  },
-  {
-    id: "HB5678",
-    title: "Education Funding Reform",
-    summary: "Increases funding for public schools and teacher salaries.",
-    state: "New York",
-    urgency: 'medium',
-    expectedVoteDate: "2023-07-20",
-    status: "Passed House",
-    sponsors: ["Rep. Michael Johnson", "Rep. Sarah Williams"],
-    mediaUrls: {
-      videos: ["https://example.com/video1"]
-    }
-  },
-  {
-    id: "AB9012",
-    title: "Healthcare Accessibility Act",
-    summary: "Expands healthcare coverage for low-income families.",
-    state: "Texas",
-    urgency: 'high',
-    expectedVoteDate: "2023-06-10",
-    status: "Pending vote",
-    sponsors: ["Rep. Robert Brown", "Sen. Elizabeth Taylor"],
-    mediaUrls: {
-      documents: ["https://example.com/healthcare-pdf"]
-    }
-  },
-  {
-    id: "SB3456",
-    title: "Housing Affordability Act",
-    summary: "Creates incentives for affordable housing development.",
-    state: "Florida",
-    urgency: 'medium',
-    expectedVoteDate: "2023-08-05",
-    status: "In committee",
-    sponsors: ["Sen. Christopher Lee", "Sen. Amanda Martinez"],
-    mediaUrls: {
-      images: ["https://placehold.co/600x400?text=Affordable+Housing"]
-    }
-  },
-  {
-    id: "HB7890",
-    title: "Infrastructure Investment",
-    summary: "Allocates funding for roads, bridges, and public transportation.",
-    state: "Michigan",
-    urgency: 'low',
-    expectedVoteDate: "2023-09-15",
-    status: "Introduced",
-    sponsors: ["Rep. David Wilson", "Rep. Maria Garcia"],
-    mediaUrls: {
-      documents: ["https://example.com/infrastructure-pdf"]
-    }
-  },
-  {
-    id: "SB2468",
-    title: "Criminal Justice Reform",
-    summary: "Reforms sentencing guidelines and promotes rehabilitation programs.",
-    state: "Illinois",
-    urgency: 'high',
-    expectedVoteDate: "2023-06-20",
-    status: "Passed Senate",
-    sponsors: ["Sen. Thomas White", "Sen. Patricia Brown"],
-    mediaUrls: {
-      videos: ["https://example.com/video2"]
-    }
-  }
-];
-
+// Mock data for forum and mutual aid (still needed until we implement those backends)
 const MOCK_MUTUAL_AID: MutualAidResource[] = [
   {
     id: "1",
@@ -197,47 +132,204 @@ const MOCK_FORUM_POSTS: ForumPost[] = [
   }
 ];
 
-// API functions
+// Check if API key is set before making requests
+const isApiKeySet = () => {
+  if (!LEGISCAN_API_KEY) {
+    toast.error("LegiScan API key is not set. Please set it in Settings.");
+    return false;
+  }
+  return true;
+};
+
+// Helper function to calculate bill urgency based on last action date
+const calculateUrgency = (lastActionDate: string): 'high' | 'medium' | 'low' => {
+  const today = new Date();
+  const actionDate = new Date(lastActionDate);
+  const diffTime = Math.abs(today.getTime() - actionDate.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays <= 14) return 'high';
+  if (diffDays <= 30) return 'medium';
+  return 'low';
+};
+
+// LegiScan API Functions
 export async function getBillsByState(state: string): Promise<Bill[]> {
-  // In a real app, this would make an actual API call
   console.log(`Fetching bills for state: ${state}`);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const filteredBills = MOCK_BILLS.filter(bill => bill.state.toLowerCase() === state.toLowerCase());
-      resolve(filteredBills);
-    }, 500); // Simulate network delay
-  });
+
+  if (!isApiKeySet()) return [];
+
+  try {
+    // Convert state name to two-letter code (this is just a placeholder)
+    const stateAbbreviation = getStateAbbreviation(state);
+    
+    // Get the master list of bills for the state
+    const url = `${LEGISCAN_API_URL}/?key=${LEGISCAN_API_KEY}&op=getMasterList&state=${stateAbbreviation}`;
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`Error fetching bills: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.status !== 'OK') {
+      throw new Error(`API Error: ${data.status}`);
+    }
+    
+    // Process the master list
+    const billsList: Bill[] = [];
+    const masterList = data.masterlist || {};
+    
+    for (const key in masterList) {
+      if (key !== 'session' && masterList.hasOwnProperty(key)) {
+        const item = masterList[key];
+        
+        // Get detailed bill information for each bill
+        const detailedBill = await getBillById(item.bill_id.toString());
+        
+        if (detailedBill) {
+          billsList.push(detailedBill);
+        }
+      }
+    }
+    
+    return billsList;
+  } catch (error) {
+    console.error("Failed to fetch bills:", error);
+    toast.error("Failed to fetch bills. Please try again later.");
+    return [];
+  }
 }
 
 export async function getBillsByCounty(state: string, county: string): Promise<Bill[]> {
   console.log(`Fetching bills for county: ${county}, state: ${state}`);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // In a real app, this would filter by county as well
-      const filteredBills = MOCK_BILLS.filter(bill => 
-        bill.state.toLowerCase() === state.toLowerCase() && 
-        (bill.county?.toLowerCase() === county.toLowerCase() || !bill.county)
-      );
-      resolve(filteredBills);
-    }, 500);
-  });
+  
+  // LegiScan doesn't support filtering by county directly
+  // So we'll fetch all state bills and filter client-side
+  const stateBills = await getBillsByState(state);
+  
+  // This is a placeholder for county filtering logic
+  // In a real scenario, you'd need additional data to know which bills affect specific counties
+  return stateBills.filter(bill => 
+    bill.description && bill.description.toLowerCase().includes(county.toLowerCase())
+  );
 }
 
 export async function getBillById(id: string): Promise<Bill | null> {
   console.log(`Fetching bill by ID: ${id}`);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const bill = MOCK_BILLS.find(bill => bill.id === id) || null;
-      resolve(bill);
-    }, 300);
-  });
+  
+  if (!isApiKeySet()) return null;
+
+  try {
+    const url = `${LEGISCAN_API_URL}/?key=${LEGISCAN_API_KEY}&op=getBill&id=${id}`;
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`Error fetching bill: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.status !== 'OK') {
+      throw new Error(`API Error: ${data.status}`);
+    }
+    
+    const billData = data.bill;
+    
+    // Transform the data to match our interface
+    const bill: Bill = {
+      bill_id: billData.bill_id.toString(),
+      bill_number: billData.bill_number,
+      title: billData.title,
+      description: billData.description || billData.title,
+      state: billData.state,
+      state_id: billData.state_id,
+      urgency: calculateUrgency(billData.last_action_date),
+      last_action_date: billData.last_action_date,
+      last_action: billData.last_action,
+      status: billData.status || 'Pending',
+      sponsors: billData.sponsors || [],
+      url: billData.url,
+      text_url: billData.texts && billData.texts.length > 0 ? billData.texts[0].url : undefined,
+      history: billData.history || [],
+      media: {
+        documents: billData.texts ? billData.texts.map((text: any) => text.url) : []
+      }
+    };
+    
+    return bill;
+  } catch (error) {
+    console.error("Failed to fetch bill details:", error);
+    toast.error("Failed to fetch bill details. Please try again later.");
+    return null;
+  }
 }
 
+// Helper function to get state abbreviation from full name
+function getStateAbbreviation(stateName: string): string {
+  const stateMap: Record<string, string> = {
+    'alabama': 'AL',
+    'alaska': 'AK',
+    'arizona': 'AZ',
+    'arkansas': 'AR',
+    'california': 'CA',
+    'colorado': 'CO',
+    'connecticut': 'CT',
+    'delaware': 'DE',
+    'florida': 'FL',
+    'georgia': 'GA',
+    'hawaii': 'HI',
+    'idaho': 'ID',
+    'illinois': 'IL',
+    'indiana': 'IN',
+    'iowa': 'IA',
+    'kansas': 'KS',
+    'kentucky': 'KY',
+    'louisiana': 'LA',
+    'maine': 'ME',
+    'maryland': 'MD',
+    'massachusetts': 'MA',
+    'michigan': 'MI',
+    'minnesota': 'MN',
+    'mississippi': 'MS',
+    'missouri': 'MO',
+    'montana': 'MT',
+    'nebraska': 'NE',
+    'nevada': 'NV',
+    'new hampshire': 'NH',
+    'new jersey': 'NJ',
+    'new mexico': 'NM',
+    'new york': 'NY',
+    'north carolina': 'NC',
+    'north dakota': 'ND',
+    'ohio': 'OH',
+    'oklahoma': 'OK',
+    'oregon': 'OR',
+    'pennsylvania': 'PA',
+    'rhode island': 'RI',
+    'south carolina': 'SC',
+    'south dakota': 'SD',
+    'tennessee': 'TN',
+    'texas': 'TX',
+    'utah': 'UT',
+    'vermont': 'VT',
+    'virginia': 'VA',
+    'washington': 'WA',
+    'west virginia': 'WV',
+    'wisconsin': 'WI',
+    'wyoming': 'WY',
+    'district of columbia': 'DC'
+  };
+  
+  return stateMap[stateName.toLowerCase()] || stateName;
+}
+
+// These functions remain the same for now as they use mock data
 export async function getMutualAidByZipCode(zipCode: string): Promise<MutualAidResource[]> {
   console.log(`Fetching mutual aid resources for ZIP: ${zipCode}`);
   return new Promise((resolve) => {
     setTimeout(() => {
-      // In a real app, this would filter by zip code
       resolve(MOCK_MUTUAL_AID);
     }, 500);
   });
@@ -267,4 +359,17 @@ export async function createForumPost(post: Omit<ForumPost, 'id' | 'createdAt' |
       resolve(newPost);
     }, 700);
   });
+}
+
+// API key management
+export function setApiKey(key: string): void {
+  // In a real app, this would be stored securely
+  // For this demo, we're just setting it in memory
+  // A better approach would be to use localStorage or a secure storage solution
+  (window as any).LEGISCAN_API_KEY = key;
+  toast.success("API key saved successfully!");
+}
+
+export function getApiKey(): string {
+  return (window as any).LEGISCAN_API_KEY || "";
 }
