@@ -1,4 +1,3 @@
-
 // API service for fetching legislative data from LegiScan
 import { toast } from "sonner";
 import { statesList, getStateAbbreviation } from './states';
@@ -172,24 +171,21 @@ export async function getBillsByState(state: string): Promise<Bill[]> {
     const billsList: Bill[] = [];
     const masterList = data.masterlist || {};
     
-    // Process all bills instead of limiting to 10
-    const promises = [];
+    // Limit to first 10 bills for performance (can be adjusted)
+    let count = 0;
     for (const key in masterList) {
-      if (key !== 'session' && masterList.hasOwnProperty(key)) {
+      if (key !== 'session' && masterList.hasOwnProperty(key) && count < 10) {
         const item = masterList[key];
-        promises.push(getBillById(item.bill_id.toString()));
+        
+        // Get detailed bill information for each bill
+        const detailedBill = await getBillById(item.bill_id.toString());
+        
+        if (detailedBill) {
+          billsList.push(detailedBill);
+          count++;
+        }
       }
     }
-    
-    // Use Promise.all to fetch all bills in parallel
-    const results = await Promise.all(promises);
-    
-    // Filter out null results and add valid bills to the list
-    results.forEach(bill => {
-      if (bill) {
-        billsList.push(bill);
-      }
-    });
     
     return billsList;
   } catch (error) {
