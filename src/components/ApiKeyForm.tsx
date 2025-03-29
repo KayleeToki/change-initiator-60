@@ -1,9 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { InfoIcon, Key, Check } from 'lucide-react';
+import { Key, Check } from 'lucide-react';
 
 const ApiKeyForm = () => {
   return (
@@ -22,7 +20,7 @@ const ApiKeyForm = () => {
       <CardContent>
         <div className="flex items-center gap-2 text-sm text-green-600 font-medium">
           <Check className="h-4 w-4" />
-          API key is pre-configured and ready to use
+          API key is configured and ready to use
         </div>
       </CardContent>
     </Card>

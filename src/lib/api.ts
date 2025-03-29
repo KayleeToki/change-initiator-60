@@ -4,7 +4,7 @@ import { statesList, getStateAbbreviation } from './states';
 
 // LegiScan API configuration
 const LEGISCAN_API_URL = "https://api.legiscan.com/";
-const LEGISCAN_API_KEY = "2d28553a8a1d7328a696c2c3dd5c9973"; // Admin-provided API key
+const LEGISCAN_API_KEY = "e9117f10376dda025b85705917ec997e"; // Updated admin-provided API key
 
 export interface Bill {
   bill_id: string;

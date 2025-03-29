@@ -1,11 +1,13 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Bill, getBillsByState } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 
 const BillsList = () => {
   const { state } = useParams<{ state: string }>();
@@ -34,7 +36,8 @@ const BillsList = () => {
           setBills(sortedBills);
         } catch (error) {
           console.error("Failed to fetch bills:", error);
-          setError("Failed to fetch legislative data. Please try again later.");
+          setError("Failed to fetch legislative data. Please try again later or check if the API service is available.");
+          toast.error("API connection issue. This may be due to CORS restrictions or API availability.");
         } finally {
           setLoading(false);
         }
@@ -98,11 +101,14 @@ const BillsList = () => {
             <div className="flex flex-col items-center justify-center">
               <AlertTriangle className="h-12 w-12 text-orange-500 mb-4" />
               <p className="text-gray-700 mb-2">{error}</p>
+              <p className="text-sm text-gray-500 mb-4">
+                The LegiScan API may have connection issues or CORS restrictions. 
+              </p>
               <Button
                 onClick={() => window.location.reload()}
-                className="mt-4"
+                className="mt-2"
               >
-                Try Again
+                <RefreshCw className="mr-2 h-4 w-4" /> Try Again
               </Button>
             </div>
           </Card>
