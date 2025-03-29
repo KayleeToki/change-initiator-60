@@ -1,9 +1,10 @@
 // API service for fetching legislative data from LegiScan
 import { toast } from "sonner";
+import { statesList, getStateAbbreviation } from './states';
 
 // LegiScan API configuration
 const LEGISCAN_API_URL = "https://api.legiscan.com/";
-const LEGISCAN_API_KEY = ""; // This should be set by the user via UI
+const LEGISCAN_API_KEY = "2d28553a8a1d7328a696c2c3dd5c9973"; // Admin-provided API key
 
 export interface Bill {
   bill_id: string;
@@ -132,15 +133,6 @@ const MOCK_FORUM_POSTS: ForumPost[] = [
   }
 ];
 
-// Check if API key is set before making requests
-const isApiKeySet = () => {
-  if (!LEGISCAN_API_KEY) {
-    toast.error("LegiScan API key is not set. Please set it in Settings.");
-    return false;
-  }
-  return true;
-};
-
 // Helper function to calculate bill urgency based on last action date
 const calculateUrgency = (lastActionDate: string): 'high' | 'medium' | 'low' => {
   const today = new Date();
@@ -157,10 +149,8 @@ const calculateUrgency = (lastActionDate: string): 'high' | 'medium' | 'low' => 
 export async function getBillsByState(state: string): Promise<Bill[]> {
   console.log(`Fetching bills for state: ${state}`);
 
-  if (!isApiKeySet()) return [];
-
   try {
-    // Convert state name to two-letter code (this is just a placeholder)
+    // Convert state name to two-letter code
     const stateAbbreviation = getStateAbbreviation(state);
     
     // Get the master list of bills for the state
@@ -181,8 +171,10 @@ export async function getBillsByState(state: string): Promise<Bill[]> {
     const billsList: Bill[] = [];
     const masterList = data.masterlist || {};
     
+    // Limit to first 10 bills for performance (can be adjusted)
+    let count = 0;
     for (const key in masterList) {
-      if (key !== 'session' && masterList.hasOwnProperty(key)) {
+      if (key !== 'session' && masterList.hasOwnProperty(key) && count < 10) {
         const item = masterList[key];
         
         // Get detailed bill information for each bill
@@ -190,6 +182,7 @@ export async function getBillsByState(state: string): Promise<Bill[]> {
         
         if (detailedBill) {
           billsList.push(detailedBill);
+          count++;
         }
       }
     }
@@ -219,8 +212,6 @@ export async function getBillsByCounty(state: string, county: string): Promise<B
 export async function getBillById(id: string): Promise<Bill | null> {
   console.log(`Fetching bill by ID: ${id}`);
   
-  if (!isApiKeySet()) return null;
-
   try {
     const url = `${LEGISCAN_API_URL}/?key=${LEGISCAN_API_KEY}&op=getBill&id=${id}`;
     const response = await fetch(url);
@@ -266,66 +257,6 @@ export async function getBillById(id: string): Promise<Bill | null> {
   }
 }
 
-// Helper function to get state abbreviation from full name
-function getStateAbbreviation(stateName: string): string {
-  const stateMap: Record<string, string> = {
-    'alabama': 'AL',
-    'alaska': 'AK',
-    'arizona': 'AZ',
-    'arkansas': 'AR',
-    'california': 'CA',
-    'colorado': 'CO',
-    'connecticut': 'CT',
-    'delaware': 'DE',
-    'florida': 'FL',
-    'georgia': 'GA',
-    'hawaii': 'HI',
-    'idaho': 'ID',
-    'illinois': 'IL',
-    'indiana': 'IN',
-    'iowa': 'IA',
-    'kansas': 'KS',
-    'kentucky': 'KY',
-    'louisiana': 'LA',
-    'maine': 'ME',
-    'maryland': 'MD',
-    'massachusetts': 'MA',
-    'michigan': 'MI',
-    'minnesota': 'MN',
-    'mississippi': 'MS',
-    'missouri': 'MO',
-    'montana': 'MT',
-    'nebraska': 'NE',
-    'nevada': 'NV',
-    'new hampshire': 'NH',
-    'new jersey': 'NJ',
-    'new mexico': 'NM',
-    'new york': 'NY',
-    'north carolina': 'NC',
-    'north dakota': 'ND',
-    'ohio': 'OH',
-    'oklahoma': 'OK',
-    'oregon': 'OR',
-    'pennsylvania': 'PA',
-    'rhode island': 'RI',
-    'south carolina': 'SC',
-    'south dakota': 'SD',
-    'tennessee': 'TN',
-    'texas': 'TX',
-    'utah': 'UT',
-    'vermont': 'VT',
-    'virginia': 'VA',
-    'washington': 'WA',
-    'west virginia': 'WV',
-    'wisconsin': 'WI',
-    'wyoming': 'WY',
-    'district of columbia': 'DC'
-  };
-  
-  return stateMap[stateName.toLowerCase()] || stateName;
-}
-
-// These functions remain the same for now as they use mock data
 export async function getMutualAidByZipCode(zipCode: string): Promise<MutualAidResource[]> {
   console.log(`Fetching mutual aid resources for ZIP: ${zipCode}`);
   return new Promise((resolve) => {
@@ -361,15 +292,4 @@ export async function createForumPost(post: Omit<ForumPost, 'id' | 'createdAt' |
   });
 }
 
-// API key management
-export function setApiKey(key: string): void {
-  // In a real app, this would be stored securely
-  // For this demo, we're just setting it in memory
-  // A better approach would be to use localStorage or a secure storage solution
-  (window as any).LEGISCAN_API_KEY = key;
-  toast.success("API key saved successfully!");
-}
-
-export function getApiKey(): string {
-  return (window as any).LEGISCAN_API_KEY || "";
-}
+// Remove API key management functions since we're using a hardcoded key

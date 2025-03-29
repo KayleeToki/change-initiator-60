@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Bill, getBillsByState } from '@/lib/api';
@@ -7,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, AlertTriangle } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
-import ApiKeyForm from '@/components/ApiKeyForm';
 
 const BillsList = () => {
   const { state } = useParams<{ state: string }>();
@@ -76,8 +74,6 @@ const BillsList = () => {
         <p className="text-gray-600 mb-6">
           Viewing current and upcoming bills sorted by urgency. Click on any bill for more details.
         </p>
-        
-        <ApiKeyForm />
         
         {loading ? (
           <div className="space-y-4 mt-4">
