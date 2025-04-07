@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { ThumbsUp, MessageSquare, FileText, Upload, Mic, Video } from 'lucide-react';
 import { ForumPost, getForumPosts, createForumPost } from '@/lib/api';
 import { toast } from "sonner";
