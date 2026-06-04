@@ -14,31 +14,41 @@ const LandingPage = () => {
       className="relative flex flex-col items-center justify-center min-h-screen p-4 overflow-hidden"
       style={{
         backgroundImage:
-          'linear-gradient(45deg, #000 25%, transparent 25%), linear-gradient(-45deg, #000 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #000 75%), linear-gradient(-45deg, transparent 75%, #000 75%)',
-        backgroundSize: '80px 80px',
-        backgroundPosition: '0 0, 0 40px, 40px -40px, -40px 0px',
-        backgroundColor: '#ffffff',
+          'linear-gradient(45deg, #d4d4d4 25%, transparent 25%), linear-gradient(-45deg, #d4d4d4 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #d4d4d4 75%), linear-gradient(-45deg, transparent 75%, #d4d4d4 75%)',
+        backgroundSize: '160px 160px',
+        backgroundPosition: '0 0, 0 80px, 80px -80px, -80px 0px',
+        backgroundColor: '#f5f5f5',
       }}
     >
-      {/* Rook silhouette backdrop - inline SVG combining chess rook + bird */}
+      {/* Bird (rook) silhouette - top left */}
       <svg
         aria-hidden="true"
-        className="absolute inset-0 m-auto opacity-20 pointer-events-none"
-        style={{ width: 'min(70vw, 600px)', height: 'min(70vw, 600px)' }}
+        className="absolute top-8 left-8 pointer-events-none"
+        style={{ width: 'min(28vw, 260px)', height: 'min(28vw, 260px)', opacity: 0.85 }}
         viewBox="0 0 200 200"
-        fill="black"
+        fill="#0a0a0a"
       >
-        {/* Chess rook piece */}
-        <path d="M55 160 h90 v15 H55z M60 150 h80 v10 H60z M70 70 h60 v80 H70z M65 50 h10 v20 H65z M85 50 h10 v20 H85z M105 50 h10 v20 H105z M125 50 h10 v20 H125z M60 45 h80 v10 H60z" />
-        {/* Bird (rook) silhouette perched on top */}
-        <path d="M100 45 c-8 -10 -20 -15 -30 -12 c5 -8 18 -12 28 -8 c-2 -6 2 -12 8 -14 c4 6 4 12 2 16 c10 -2 22 4 24 12 c-12 -2 -22 2 -32 6 z M128 35 l8 -2 l-6 4 z" />
+        {/* Stylized rook bird silhouette */}
+        <path d="M40 130 c5 -30 25 -55 55 -60 c-8 -8 -10 -18 -6 -28 c6 6 14 8 22 6 c-2 8 0 16 6 22 c20 2 38 14 48 32 c4 8 6 18 4 28 c-4 -4 -10 -6 -16 -4 c2 6 0 14 -6 18 c-4 -6 -12 -8 -18 -4 c0 8 -6 14 -14 16 c-4 -6 -12 -8 -18 -4 c-2 6 -8 10 -16 10 c-2 -4 -6 -8 -12 -8 c-12 0 -22 -8 -29 -24 z M150 95 l10 -4 l-8 6 z" />
+        <circle cx="148" cy="92" r="2" fill="#f5f5f5" />
+      </svg>
+
+      {/* Chess rook piece - bottom right */}
+      <svg
+        aria-hidden="true"
+        className="absolute bottom-8 right-8 pointer-events-none"
+        style={{ width: 'min(28vw, 260px)', height: 'min(28vw, 260px)', opacity: 0.85 }}
+        viewBox="0 0 200 200"
+        fill="#0a0a0a"
+      >
+        <path d="M50 170 h100 v15 H50z M55 158 h90 v10 H55z M65 75 h70 v82 H65z M60 55 h12 v22 H60z M82 55 h12 v22 H82z M104 55 h12 v22 H104z M126 55 h12 v22 H126z M55 50 h90 v10 H55z" />
       </svg>
 
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="relative z-10 text-center max-w-3xl mx-auto bg-black/60 backdrop-blur-sm rounded-2xl p-10 border border-white/10 shadow-2xl"
+        className="relative z-10 text-center max-w-3xl mx-auto bg-black/70 backdrop-blur-sm rounded-2xl p-10 border border-white/10 shadow-2xl"
       >
         <h1 className="text-5xl font-bold mb-8 text-white md:text-6xl drop-shadow-lg">
           Would you like to make a change?
@@ -68,8 +78,8 @@ const LandingPage = () => {
         </div>
       </motion.div>
 
-      <div className="absolute bottom-8 text-center text-white/80 z-10 bg-black/40 px-4 py-2 rounded">
-        <p>A platform for civic engagement and community action</p>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center z-10 bg-black/50 px-5 py-2.5 rounded">
+        <p className="text-white text-lg font-medium">A platform for civic engagement and community action</p>
       </div>
     </div>
   );
