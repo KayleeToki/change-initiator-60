@@ -119,9 +119,10 @@ const BillsList = () => {
             <h1 className="text-5xl font-serif font-bold mb-3 text-amber-50">
               Legislation in Florida
             </h1>
-            <p className="text-amber-100/80 italic max-w-2xl">
-              "Across cultures, the rook is a bridge between worlds — a messenger of wisdom and transformation."
-              Bills below are sorted by urgency. Click any bill to see its full path.
+            <p className="text-amber-100/85 max-w-2xl">
+              Browse proposed legislation currently on the docket in Florida. Bills are sorted by urgency —
+              click any bill to read its summary, status, and research links. Head to the Forum to discuss
+              these bills with neighbors, organize protests, and coordinate local civic action.
             </p>
           </div>
         ) : (
