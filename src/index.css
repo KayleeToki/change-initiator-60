@@ -92,44 +92,44 @@
 
 /* Scoped page themes */
 
-/* Moody rook theme — gold on deep charcoal. Used by Legislation list & Forum. */
+/* Moody rook theme — gold on warm charcoal. Used by Legislation list & Forum. */
 .theme-rook {
-  --background: 30 10% 6%;
-  --foreground: 42 30% 90%;
-  --card: 28 12% 10%;
-  --card-foreground: 42 30% 92%;
-  --popover: 28 12% 10%;
-  --popover-foreground: 42 30% 92%;
-  --primary: 42 72% 56%;
-  --primary-foreground: 28 25% 8%;
-  --secondary: 30 10% 14%;
-  --secondary-foreground: 42 30% 90%;
-  --muted: 30 10% 14%;
-  --muted-foreground: 38 12% 68%;
-  --accent: 42 55% 38%;
-  --accent-foreground: 42 30% 95%;
-  --border: 35 18% 20%;
-  --input: 35 18% 20%;
-  --ring: 42 72% 56%;
+  --background: 32 10% 13%;
+  --foreground: 42 32% 92%;
+  --card: 30 11% 17%;
+  --card-foreground: 42 32% 94%;
+  --popover: 30 11% 17%;
+  --popover-foreground: 42 32% 94%;
+  --primary: 42 78% 62%;
+  --primary-foreground: 28 25% 10%;
+  --secondary: 32 10% 22%;
+  --secondary-foreground: 42 32% 92%;
+  --muted: 32 10% 22%;
+  --muted-foreground: 38 14% 75%;
+  --accent: 42 60% 48%;
+  --accent-foreground: 42 30% 96%;
+  --border: 35 18% 28%;
+  --input: 35 18% 28%;
+  --ring: 42 78% 62%;
 }
 
 /* Lighter version of the black/green theme. Used by individual Bill pages. */
 .theme-bill {
-  --background: 0 0% 13%;
+  --background: 0 0% 20%;
   --foreground: 0 0% 98%;
-  --card: 0 0% 17%;
+  --card: 0 0% 24%;
   --card-foreground: 0 0% 98%;
-  --popover: 0 0% 17%;
+  --popover: 0 0% 24%;
   --popover-foreground: 0 0% 98%;
-  --primary: 152 60% 55%;
-  --primary-foreground: 0 0% 8%;
-  --secondary: 0 0% 22%;
+  --primary: 152 62% 62%;
+  --primary-foreground: 0 0% 10%;
+  --secondary: 0 0% 30%;
   --secondary-foreground: 0 0% 98%;
-  --muted: 0 0% 22%;
-  --muted-foreground: 0 0% 78%;
-  --accent: 152 45% 40%;
+  --muted: 0 0% 30%;
+  --muted-foreground: 0 0% 82%;
+  --accent: 152 50% 48%;
   --accent-foreground: 0 0% 98%;
-  --border: 0 0% 26%;
-  --input: 0 0% 26%;
-  --ring: 152 60% 55%;
+  --border: 0 0% 34%;
+  --input: 0 0% 34%;
+  --ring: 152 62% 62%;
 }
