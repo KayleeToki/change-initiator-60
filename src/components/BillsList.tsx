@@ -102,19 +102,37 @@ const BillsList = () => {
         </>
       )}
 
-      <Button 
-        variant="outline" 
-        className="mb-6"
+      <Button
+        variant="outline"
+        className={`mb-6 relative z-10 ${isFlorida ? 'bg-amber-100/90 border-amber-300 text-amber-950 hover:bg-amber-100' : ''}`}
         onClick={() => navigate('/map')}
       >
         <ArrowLeft className="mr-2 h-4 w-4" /> Back to Map
       </Button>
-      
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2">Legislation in {state}</h1>
-        <p className="text-gray-600 mb-6">
-          Viewing current and upcoming bills sorted by urgency. Click on any bill for more details.
-        </p>
+
+      <div className="max-w-6xl mx-auto relative z-10">
+        {isFlorida ? (
+          <div className="mb-8 border-l-4 border-amber-400 pl-5 py-2">
+            <p className="text-amber-400 uppercase tracking-[0.3em] text-xs font-semibold mb-2">
+              The Rook's Watch · Florida
+            </p>
+            <h1 className="text-5xl font-serif font-bold mb-3 text-amber-50">
+              Legislation in Florida
+            </h1>
+            <p className="text-amber-100/80 italic max-w-2xl">
+              "Across cultures, the rook is a bridge between worlds — a messenger of wisdom and transformation."
+              Bills below are sorted by urgency. Click any bill to see its full path.
+            </p>
+          </div>
+        ) : (
+          <>
+            <h1 className="text-3xl font-bold mb-2">Legislation in {state}</h1>
+            <p className="text-gray-600 mb-6">
+              Viewing current and upcoming bills sorted by urgency. Click on any bill for more details.
+            </p>
+          </>
+        )}
+
         
         {loading ? (
           <div className="space-y-4 mt-4">
