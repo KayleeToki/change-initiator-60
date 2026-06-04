@@ -97,7 +97,7 @@ const BillsList = () => {
   const urgencyExplanation = `"Sorted by urgency" means the docket is ordered from the most time-sensitive matters to the least. High-priority items — emergency motions, bills with imminent hearings or deadlines, and legislation that could cause significant harm if delayed — appear at the top so they can be reviewed and acted on first.`;
 
   return (
-    <div className="min-h-screen p-6 relative bg-background text-foreground">
+    <div className="theme-rook min-h-screen p-6 relative bg-background text-foreground">
       <Button
         variant="outline"
         className="mb-6 relative z-10"
