@@ -66,7 +66,7 @@ const BillDetail = () => {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-background p-6">
+      <div className="theme-bill min-h-screen bg-background text-foreground p-6">
         <Button 
           variant="outline" 
           className="mb-6"
@@ -94,7 +94,7 @@ const BillDetail = () => {
   
   if (error || !bill) {
     return (
-      <div className="min-h-screen bg-background p-6">
+      <div className="theme-bill min-h-screen bg-background text-foreground p-6">
         <Button 
           variant="outline" 
           className="mb-6"
@@ -122,7 +122,7 @@ const BillDetail = () => {
   }
   
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="theme-bill min-h-screen bg-background text-foreground p-6">
       <Button 
         variant="outline" 
         className="mb-6"
