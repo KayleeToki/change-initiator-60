@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import ravenSilhouette from "@/assets/raven-silhouette.png";
+import chessRook from "@/assets/chess-rook.png";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -21,27 +22,28 @@ const LandingPage = () => {
         backgroundColor: '#f5f5f5',
       }}
     >
-      {/* Raven silhouette - top left */}
+      {/* Raven silhouette - top left corner */}
       <img
         src={ravenSilhouette}
         alt=""
         aria-hidden="true"
         width={1024}
         height={1024}
-        className="absolute top-4 left-4 pointer-events-none object-contain mix-blend-multiply"
+        className="absolute top-0 left-0 pointer-events-none object-contain mix-blend-multiply"
         style={{ width: 'min(32vw, 300px)', height: 'min(32vw, 300px)', opacity: 0.92 }}
       />
 
-      {/* Chess rook piece - bottom right */}
-      <svg
+      {/* Chess rook piece - bottom right corner */}
+      <img
+        src={chessRook}
+        alt=""
         aria-hidden="true"
-        className="absolute bottom-8 right-8 pointer-events-none"
-        style={{ width: 'min(28vw, 260px)', height: 'min(28vw, 260px)', opacity: 0.85 }}
-        viewBox="0 0 200 200"
-        fill="#0a0a0a"
-      >
-        <path d="M50 170 h100 v15 H50z M55 158 h90 v10 H55z M65 75 h70 v82 H65z M60 55 h12 v22 H60z M82 55 h12 v22 H82z M104 55 h12 v22 H104z M126 55 h12 v22 H126z M55 50 h90 v10 H55z" />
-      </svg>
+        width={1024}
+        height={1024}
+        loading="lazy"
+        className="absolute bottom-0 right-0 pointer-events-none object-contain mix-blend-multiply"
+        style={{ width: 'min(26vw, 240px)', height: 'min(26vw, 240px)', opacity: 0.88 }}
+      />
 
       <motion.div
         initial={{ opacity: 0, y: -20 }}
