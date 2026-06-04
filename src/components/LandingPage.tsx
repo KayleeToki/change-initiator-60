@@ -20,17 +20,16 @@ const LandingPage = () => {
         backgroundColor: '#f5f5f5',
       }}
     >
-      {/* Bird (rook) silhouette - top left */}
+      {/* Raven silhouette - top left */}
       <svg
         aria-hidden="true"
         className="absolute top-8 left-8 pointer-events-none"
-        style={{ width: 'min(28vw, 260px)', height: 'min(28vw, 260px)', opacity: 0.85 }}
-        viewBox="0 0 200 200"
+        style={{ width: 'min(28vw, 260px)', height: 'min(28vw, 260px)', opacity: 0.9 }}
+        viewBox="0 0 512 512"
         fill="#0a0a0a"
       >
-        {/* Stylized rook bird silhouette */}
-        <path d="M40 130 c5 -30 25 -55 55 -60 c-8 -8 -10 -18 -6 -28 c6 6 14 8 22 6 c-2 8 0 16 6 22 c20 2 38 14 48 32 c4 8 6 18 4 28 c-4 -4 -10 -6 -16 -4 c2 6 0 14 -6 18 c-4 -6 -12 -8 -18 -4 c0 8 -6 14 -14 16 c-4 -6 -12 -8 -18 -4 c-2 6 -8 10 -16 10 c-2 -4 -6 -8 -12 -8 c-12 0 -22 -8 -29 -24 z M150 95 l10 -4 l-8 6 z" />
-        <circle cx="148" cy="92" r="2" fill="#f5f5f5" />
+        {/* Raven / crow silhouette - perched, looking right */}
+        <path d="M180 350 C150 340 120 320 105 290 C95 270 95 245 110 235 C100 220 105 200 125 195 C140 175 170 165 195 175 C210 155 240 145 265 155 C285 140 320 140 345 160 C370 155 395 170 405 195 C420 200 430 215 425 230 C440 245 440 270 425 285 C420 310 400 335 370 350 C385 365 395 385 390 405 L370 405 C365 390 355 380 340 378 L320 395 L310 405 L295 405 L300 385 L280 380 L260 395 L245 405 L230 405 L235 385 L215 380 L200 400 L185 405 L175 405 L185 385 Z M115 215 L95 205 L90 215 L110 225 Z" />
       </svg>
 
       {/* Chess rook piece - bottom right */}
