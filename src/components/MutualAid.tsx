@@ -36,12 +36,12 @@ const MutualAid = () => {
       case 'food': return <Utensils className="h-6 w-6 text-green-500" />;
       case 'shelter': return <Home className="h-6 w-6 text-blue-500" />;
       case 'event': return <Calendar className="h-6 w-6 text-purple-500" />;
-      default: return <MapPin className="h-6 w-6 text-gray-500" />;
+      default: return <MapPin className="h-6 w-6 text-muted-foreground" />;
     }
   };
   
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <Button 
@@ -126,23 +126,23 @@ const MutualAid = () => {
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-gray-700 mb-4">{resource.description}</p>
+                        <p className="text-foreground/85 mb-4">{resource.description}</p>
                         <div className="space-y-2 text-sm">
                           {resource.address && (
                             <div className="flex items-center">
-                              <MapPin className="h-4 w-4 text-gray-500 mr-2" />
+                              <MapPin className="h-4 w-4 text-muted-foreground mr-2" />
                               <span>{resource.address}</span>
                             </div>
                           )}
                           {resource.date && (
                             <div className="flex items-center">
-                              <CalendarDays className="h-4 w-4 text-gray-500 mr-2" />
+                              <CalendarDays className="h-4 w-4 text-muted-foreground mr-2" />
                               <span>{resource.date}</span>
                             </div>
                           )}
                           {resource.contactInfo && (
                             <div className="flex items-center">
-                              <Phone className="h-4 w-4 text-gray-500 mr-2" />
+                              <Phone className="h-4 w-4 text-muted-foreground mr-2" />
                               <span>{resource.contactInfo}</span>
                             </div>
                           )}
@@ -178,23 +178,23 @@ const MutualAid = () => {
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-gray-700 mb-4">{resource.description}</p>
+                        <p className="text-foreground/85 mb-4">{resource.description}</p>
                         <div className="space-y-2 text-sm">
                           {resource.address && (
                             <div className="flex items-center">
-                              <MapPin className="h-4 w-4 text-gray-500 mr-2" />
+                              <MapPin className="h-4 w-4 text-muted-foreground mr-2" />
                               <span>{resource.address}</span>
                             </div>
                           )}
                           {resource.date && (
                             <div className="flex items-center">
-                              <CalendarDays className="h-4 w-4 text-gray-500 mr-2" />
+                              <CalendarDays className="h-4 w-4 text-muted-foreground mr-2" />
                               <span>{resource.date}</span>
                             </div>
                           )}
                           {resource.contactInfo && (
                             <div className="flex items-center">
-                              <Phone className="h-4 w-4 text-gray-500 mr-2" />
+                              <Phone className="h-4 w-4 text-muted-foreground mr-2" />
                               <span>{resource.contactInfo}</span>
                             </div>
                           )}
@@ -230,17 +230,17 @@ const MutualAid = () => {
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-gray-700 mb-4">{resource.description}</p>
+                        <p className="text-foreground/85 mb-4">{resource.description}</p>
                         <div className="space-y-2 text-sm">
                           {resource.address && (
                             <div className="flex items-center">
-                              <MapPin className="h-4 w-4 text-gray-500 mr-2" />
+                              <MapPin className="h-4 w-4 text-muted-foreground mr-2" />
                               <span>{resource.address}</span>
                             </div>
                           )}
                           {resource.contactInfo && (
                             <div className="flex items-center">
-                              <Phone className="h-4 w-4 text-gray-500 mr-2" />
+                              <Phone className="h-4 w-4 text-muted-foreground mr-2" />
                               <span>{resource.contactInfo}</span>
                             </div>
                           )}
@@ -276,23 +276,23 @@ const MutualAid = () => {
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-gray-700 mb-4">{resource.description}</p>
+                        <p className="text-foreground/85 mb-4">{resource.description}</p>
                         <div className="space-y-2 text-sm">
                           {resource.address && (
                             <div className="flex items-center">
-                              <MapPin className="h-4 w-4 text-gray-500 mr-2" />
+                              <MapPin className="h-4 w-4 text-muted-foreground mr-2" />
                               <span>{resource.address}</span>
                             </div>
                           )}
                           {resource.date && (
                             <div className="flex items-center">
-                              <CalendarDays className="h-4 w-4 text-gray-500 mr-2" />
+                              <CalendarDays className="h-4 w-4 text-muted-foreground mr-2" />
                               <span>{resource.date}</span>
                             </div>
                           )}
                           {resource.contactInfo && (
                             <div className="flex items-center">
-                              <Phone className="h-4 w-4 text-gray-500 mr-2" />
+                              <Phone className="h-4 w-4 text-muted-foreground mr-2" />
                               <span>{resource.contactInfo}</span>
                             </div>
                           )}
@@ -317,15 +317,15 @@ const MutualAid = () => {
           ) : (
             <Card className="w-full p-8 text-center">
               <CardContent>
-                <p className="text-gray-500">No resources found for ZIP code {zipCode}.</p>
-                <p className="text-gray-500 mt-2">Try another ZIP code or check back later.</p>
+                <p className="text-muted-foreground">No resources found for ZIP code {zipCode}.</p>
+                <p className="text-muted-foreground mt-2">Try another ZIP code or check back later.</p>
               </CardContent>
             </Card>
           )
         ) : (
           <Card className="w-full p-8 text-center">
             <CardContent>
-              <p className="text-gray-500">Enter your ZIP code above to find resources in your area.</p>
+              <p className="text-muted-foreground">Enter your ZIP code above to find resources in your area.</p>
             </CardContent>
           </Card>
         )}

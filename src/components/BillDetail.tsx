@@ -53,8 +53,8 @@ const BillDetail = () => {
     switch (urgency) {
       case 'high': return 'bg-red-500 text-white';
       case 'medium': return 'bg-orange-400 text-white';
-      case 'low': return 'bg-yellow-300 text-gray-800';
-      default: return 'bg-gray-300 text-gray-800';
+      case 'low': return 'bg-yellow-300 text-foreground';
+      default: return 'bg-gray-300 text-foreground';
     }
   };
   
@@ -66,7 +66,7 @@ const BillDetail = () => {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-background p-6">
         <Button 
           variant="outline" 
           className="mb-6"
@@ -94,7 +94,7 @@ const BillDetail = () => {
   
   if (error || !bill) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-background p-6">
         <Button 
           variant="outline" 
           className="mb-6"
@@ -109,7 +109,7 @@ const BillDetail = () => {
           <Card className="w-full p-8 mt-4 text-center">
             <AlertTriangle className="h-12 w-12 text-orange-500 mx-auto mb-4" />
             <h2 className="text-2xl font-bold mb-4">{error || "Bill Not Found"}</h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-muted-foreground mb-6">
               {!error && "The bill you are looking for could not be found. It may have been removed or the ID is incorrect."}
             </p>
             <Button onClick={() => navigate(-1)}>
@@ -122,7 +122,7 @@ const BillDetail = () => {
   }
   
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-background p-6">
       <Button 
         variant="outline" 
         className="mb-6"
@@ -141,16 +141,16 @@ const BillDetail = () => {
               <Badge variant="outline">{bill.bill_number}</Badge>
             </div>
             <CardTitle className="text-2xl">{bill.title}</CardTitle>
-            <CardDescription className="text-gray-500">
+            <CardDescription className="text-muted-foreground">
               <span className="inline-flex items-center">
                 <Calendar className="h-4 w-4 mr-1" /> Last action: {formatDate(bill.last_action_date)}
               </span>
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="bg-gray-50 p-4 rounded-lg mb-6">
+            <div className="bg-background p-4 rounded-lg mb-6">
               <h3 className="font-semibold mb-2">Summary</h3>
-              <p className="text-gray-700">{bill.description || "No summary available."}</p>
+              <p className="text-foreground/85">{bill.description || "No summary available."}</p>
             </div>
             
             {bill.sponsors && bill.sponsors.length > 0 && (
@@ -158,7 +158,7 @@ const BillDetail = () => {
                 <h3 className="font-semibold mb-2 flex items-center">
                   <Users className="h-4 w-4 mr-1" /> Sponsors
                 </h3>
-                <ul className="list-disc list-inside text-gray-700">
+                <ul className="list-disc list-inside text-foreground/85">
                   {bill.sponsors.map((sponsor, index) => (
                     <li key={index}>{sponsor.sponsor_name} ({sponsor.sponsor_type})</li>
                   ))}
@@ -175,23 +175,23 @@ const BillDetail = () => {
               </TabsList>
               
               <TabsContent value="details" className="space-y-4">
-                <div className="bg-white p-4 rounded-lg border">
+                <div className="bg-card p-4 rounded-lg border">
                   <h4 className="font-medium">Current Status</h4>
-                  <p className="text-gray-700">{bill.status}</p>
+                  <p className="text-foreground/85">{bill.status}</p>
                 </div>
-                <div className="bg-white p-4 rounded-lg border">
+                <div className="bg-card p-4 rounded-lg border">
                   <h4 className="font-medium">State</h4>
-                  <p className="text-gray-700">{bill.state}</p>
+                  <p className="text-foreground/85">{bill.state}</p>
                 </div>
                 {bill.county && (
-                  <div className="bg-white p-4 rounded-lg border">
+                  <div className="bg-card p-4 rounded-lg border">
                     <h4 className="font-medium">County</h4>
-                    <p className="text-gray-700">{bill.county}</p>
+                    <p className="text-foreground/85">{bill.county}</p>
                   </div>
                 )}
-                <div className="bg-white p-4 rounded-lg border">
+                <div className="bg-card p-4 rounded-lg border">
                   <h4 className="font-medium">Last Action</h4>
-                  <p className="text-gray-700">{bill.last_action}</p>
+                  <p className="text-foreground/85">{bill.last_action}</p>
                 </div>
               </TabsContent>
               
@@ -199,20 +199,20 @@ const BillDetail = () => {
                 {bill.history && bill.history.length > 0 ? (
                   <div className="space-y-2">
                     {bill.history.map((event, index) => (
-                      <div key={index} className="bg-white p-4 rounded-lg border">
+                      <div key={index} className="bg-card p-4 rounded-lg border">
                         <div className="flex items-start gap-2">
-                          <History className="h-5 w-5 text-gray-500 mt-0.5" />
+                          <History className="h-5 w-5 text-muted-foreground mt-0.5" />
                           <div>
-                            <p className="text-sm text-gray-500">{formatDate(event.date)}</p>
+                            <p className="text-sm text-muted-foreground">{formatDate(event.date)}</p>
                             <p className="font-medium">{event.action}</p>
-                            <p className="text-sm text-gray-700">Chamber: {event.chamber}</p>
+                            <p className="text-sm text-foreground/85">Chamber: {event.chamber}</p>
                           </div>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center p-8 text-gray-500">
+                  <div className="text-center p-8 text-muted-foreground">
                     <p>No history available for this bill.</p>
                   </div>
                 )}
@@ -220,7 +220,7 @@ const BillDetail = () => {
               
               <TabsContent value="documents">
                 {bill.media?.documents && bill.media.documents.length > 0 ? (
-                  <div className="bg-white p-4 rounded-lg border">
+                  <div className="bg-card p-4 rounded-lg border">
                     <h4 className="font-medium mb-2">Official Documents</h4>
                     <div className="space-y-2">
                       {bill.media.documents.map((url, index) => (
@@ -240,7 +240,7 @@ const BillDetail = () => {
                     </div>
                   </div>
                 ) : bill.text_url ? (
-                  <div className="bg-white p-4 rounded-lg border">
+                  <div className="bg-card p-4 rounded-lg border">
                     <h4 className="font-medium mb-2">Bill Text</h4>
                     <Button 
                       variant="outline" 
@@ -255,13 +255,13 @@ const BillDetail = () => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="text-center p-8 text-gray-500">
+                  <div className="text-center p-8 text-muted-foreground">
                     <p>No documents available for this bill.</p>
                   </div>
                 )}
 
                 {bill.url && (
-                  <div className="bg-white p-4 rounded-lg border mt-4">
+                  <div className="bg-card p-4 rounded-lg border mt-4">
                     <h4 className="font-medium mb-2">Official Bill Page</h4>
                     <Button 
                       variant="outline" 
@@ -277,9 +277,9 @@ const BillDetail = () => {
               
               <TabsContent value="actions">
                 <div className="space-y-4">
-                  <div className="bg-white p-4 rounded-lg border">
+                  <div className="bg-card p-4 rounded-lg border">
                     <h4 className="font-medium mb-2">Contact Your Representatives</h4>
-                    <p className="text-gray-700 mb-4">
+                    <p className="text-foreground/85 mb-4">
                       Let your representatives know your thoughts on this bill.
                     </p>
                     <Button className="w-full sm:w-auto">
@@ -287,9 +287,9 @@ const BillDetail = () => {
                     </Button>
                   </div>
                   
-                  <div className="bg-white p-4 rounded-lg border">
+                  <div className="bg-card p-4 rounded-lg border">
                     <h4 className="font-medium mb-2">Share This Bill</h4>
-                    <p className="text-gray-700 mb-4">
+                    <p className="text-foreground/85 mb-4">
                       Spread awareness by sharing with your community.
                     </p>
                     <div className="flex flex-wrap gap-2">
