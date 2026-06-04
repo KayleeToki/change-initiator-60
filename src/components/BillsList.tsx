@@ -171,13 +171,17 @@ const BillsList = () => {
         ) : bills.length > 0 ? (
           <div className="space-y-4 mt-4">
             {bills.map((bill) => (
-              <Card 
-                key={bill.bill_id} 
-                className="w-full cursor-pointer hover:shadow-md transition-shadow"
+              <Card
+                key={bill.bill_id}
+                className={`w-full cursor-pointer transition-all ${
+                  isFlorida
+                    ? 'bg-gradient-to-br from-slate-900/90 to-slate-950/90 border-amber-500/30 hover:border-amber-400/70 hover:shadow-amber-500/20 hover:shadow-lg backdrop-blur'
+                    : 'hover:shadow-md'
+                }`}
                 onClick={() => navigate(`/bill/${bill.bill_id}`)}
               >
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-xl font-semibold flex items-center gap-3">
+                  <CardTitle className={`text-xl font-semibold flex items-center gap-3 ${isFlorida ? 'text-amber-50' : ''}`}>
                     <Badge className={getUrgencyClass(bill.urgency)}>
                       {bill.urgency.charAt(0).toUpperCase() + bill.urgency.slice(1)} Priority
                     </Badge>
@@ -185,21 +189,22 @@ const BillsList = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 mb-3">{bill.description}</p>
+                  <p className={`mb-3 ${isFlorida ? 'text-amber-100/75' : 'text-gray-600'}`}>{bill.description}</p>
                   <div className="flex flex-wrap gap-2 text-sm">
-                    <Badge variant="outline" className="font-normal">
+                    <Badge variant="outline" className={`font-normal ${isFlorida ? 'border-amber-500/40 text-amber-200' : ''}`}>
                       Bill ID: {bill.bill_id}
                     </Badge>
-                    <Badge variant="outline" className="font-normal">
+                    <Badge variant="outline" className={`font-normal ${isFlorida ? 'border-amber-500/40 text-amber-200' : ''}`}>
                       Last action: {formatDate(bill.last_action_date)}
                     </Badge>
-                    <Badge variant="outline" className="font-normal">
+                    <Badge variant="outline" className={`font-normal ${isFlorida ? 'border-amber-500/40 text-amber-200' : ''}`}>
                       Status: {bill.status}
                     </Badge>
                   </div>
                 </CardContent>
               </Card>
             ))}
+
           </div>
         ) : (
           <Card className="w-full p-6 text-center mt-4">
