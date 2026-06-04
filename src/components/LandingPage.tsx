@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import ravenSilhouette from "@/assets/raven-silhouette.png";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -21,16 +22,15 @@ const LandingPage = () => {
       }}
     >
       {/* Raven silhouette - top left */}
-      <svg
+      <img
+        src={ravenSilhouette}
+        alt=""
         aria-hidden="true"
-        className="absolute top-8 left-8 pointer-events-none"
-        style={{ width: 'min(28vw, 260px)', height: 'min(28vw, 260px)', opacity: 0.9 }}
-        viewBox="0 0 512 512"
-        fill="#0a0a0a"
-      >
-        {/* Raven / crow silhouette - perched, looking right */}
-        <path d="M180 350 C150 340 120 320 105 290 C95 270 95 245 110 235 C100 220 105 200 125 195 C140 175 170 165 195 175 C210 155 240 145 265 155 C285 140 320 140 345 160 C370 155 395 170 405 195 C420 200 430 215 425 230 C440 245 440 270 425 285 C420 310 400 335 370 350 C385 365 395 385 390 405 L370 405 C365 390 355 380 340 378 L320 395 L310 405 L295 405 L300 385 L280 380 L260 395 L245 405 L230 405 L235 385 L215 380 L200 400 L185 405 L175 405 L185 385 Z M115 215 L95 205 L90 215 L110 225 Z" />
-      </svg>
+        width={1024}
+        height={1024}
+        className="absolute top-4 left-4 pointer-events-none object-contain mix-blend-multiply"
+        style={{ width: 'min(32vw, 300px)', height: 'min(32vw, 300px)', opacity: 0.92 }}
+      />
 
       {/* Chess rook piece - bottom right */}
       <svg
