@@ -62,8 +62,46 @@ const BillsList = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
   
+  const isFlorida = state === 'Florida';
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div
+      className="min-h-screen p-6 relative"
+      style={
+        isFlorida
+          ? {
+              background:
+                'radial-gradient(ellipse at top, #1a1a2e 0%, #0a0a14 60%, #000 100%)',
+              color: '#e8e8e8',
+            }
+          : { background: '#f9fafb' }
+      }
+    >
+      {isFlorida && (
+        <>
+          {/* Decorative rook bird silhouette */}
+          <svg
+            aria-hidden="true"
+            className="absolute top-10 right-10 pointer-events-none"
+            style={{ width: 'min(20vw, 220px)', opacity: 0.18 }}
+            viewBox="0 0 200 200"
+            fill="#c9a84c"
+          >
+            <path d="M40 130 c5 -30 25 -55 55 -60 c-8 -8 -10 -18 -6 -28 c6 6 14 8 22 6 c-2 8 0 16 6 22 c20 2 38 14 48 32 c4 8 6 18 4 28 c-4 -4 -10 -6 -16 -4 c2 6 0 14 -6 18 c-4 -6 -12 -8 -18 -4 c0 8 -6 14 -14 16 c-4 -6 -12 -8 -18 -4 c-2 6 -8 10 -16 10 c-2 -4 -6 -8 -12 -8 c-12 0 -22 -8 -29 -24 z" />
+          </svg>
+          {/* Decorative chess rook silhouette */}
+          <svg
+            aria-hidden="true"
+            className="absolute bottom-10 left-10 pointer-events-none"
+            style={{ width: 'min(18vw, 200px)', opacity: 0.15 }}
+            viewBox="0 0 200 200"
+            fill="#c9a84c"
+          >
+            <path d="M50 170 h100 v15 H50z M55 158 h90 v10 H55z M65 75 h70 v82 H65z M60 55 h12 v22 H60z M82 55 h12 v22 H82z M104 55 h12 v22 H104z M126 55 h12 v22 H126z M55 50 h90 v10 H55z" />
+          </svg>
+        </>
+      )}
+
       <Button 
         variant="outline" 
         className="mb-6"
