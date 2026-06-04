@@ -76,10 +76,10 @@ const Forum = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-2">Community Forum</h1>
-        <p className="text-gray-600 mb-6">
+        <p className="text-muted-foreground mb-6">
           Join the conversation about civic issues that matter to you.
         </p>
         
@@ -142,7 +142,7 @@ const Forum = () => {
                     <Upload className="h-4 w-4 mr-1" /> Upload
                   </Button>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   For demo purposes, you can enter any URL. In a production app, you would be able to upload files.
                 </p>
               </div>
@@ -189,7 +189,7 @@ const renderPosts = (posts: ForumPost[], loading: boolean, formatDate: (date: st
   if (loading) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500">Loading posts...</p>
+        <p className="text-muted-foreground">Loading posts...</p>
       </div>
     );
   }
@@ -197,7 +197,7 @@ const renderPosts = (posts: ForumPost[], loading: boolean, formatDate: (date: st
   if (posts.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500">No posts found.</p>
+        <p className="text-muted-foreground">No posts found.</p>
       </div>
     );
   }
@@ -210,7 +210,7 @@ const renderPosts = (posts: ForumPost[], loading: boolean, formatDate: (date: st
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-xl">{post.title}</CardTitle>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   Posted by {post.username} on {formatDate(post.createdAt)}
                 </p>
               </div>
@@ -221,7 +221,7 @@ const renderPosts = (posts: ForumPost[], loading: boolean, formatDate: (date: st
             <p className="whitespace-pre-line">{post.content}</p>
             
             {post.mediaType === 'audio' && post.mediaUrl && (
-              <div className="mt-4 bg-gray-100 p-4 rounded-lg">
+              <div className="mt-4 bg-muted p-4 rounded-lg">
                 <p className="text-sm font-medium mb-2">Audio Content</p>
                 <audio controls className="w-full">
                   <source src={post.mediaUrl} type="audio/mpeg" />
@@ -231,7 +231,7 @@ const renderPosts = (posts: ForumPost[], loading: boolean, formatDate: (date: st
             )}
             
             {post.mediaType === 'video' && post.mediaUrl && (
-              <div className="mt-4 bg-gray-100 p-4 rounded-lg">
+              <div className="mt-4 bg-muted p-4 rounded-lg">
                 <p className="text-sm font-medium mb-2">Video Content</p>
                 <video controls className="w-full rounded">
                   <source src={post.mediaUrl} type="video/mp4" />
@@ -240,7 +240,7 @@ const renderPosts = (posts: ForumPost[], loading: boolean, formatDate: (date: st
               </div>
             )}
           </CardContent>
-          <CardFooter className="flex justify-between text-gray-500 text-sm">
+          <CardFooter className="flex justify-between text-muted-foreground text-sm">
             <Button variant="ghost" size="sm">
               <ThumbsUp className="h-4 w-4 mr-1" /> {post.likes}
             </Button>
