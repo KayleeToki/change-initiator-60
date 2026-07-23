@@ -153,18 +153,43 @@ const BillDetail = () => {
               <p className="text-foreground/85">{bill.description || "No summary available."}</p>
             </div>
             
-            {bill.sponsors && bill.sponsors.length > 0 && (
-              <div className="mb-6">
-                <h3 className="font-semibold mb-2 flex items-center">
-                  <Users className="h-4 w-4 mr-1" /> Sponsors
-                </h3>
-                <ul className="list-disc list-inside text-foreground/85">
-                  {bill.sponsors.map((sponsor, index) => (
-                    <li key={index}>{sponsor.sponsor_name} ({sponsor.sponsor_type})</li>
-                  ))}
+            <div className="mb-6">
+              <h3 className="font-semibold mb-2 flex items-center">
+                <Users className="h-4 w-4 mr-1" /> Sponsors
+              </h3>
+              {bill.sponsors && bill.sponsors.length > 0 ? (
+                <ul className="space-y-2">
+                  {bill.sponsors.map((sponsor, index) => {
+                    const meta = [
+                      sponsor.role,
+                      sponsor.party,
+                      sponsor.district ? `District ${sponsor.district}` : null,
+                    ]
+                      .filter(Boolean)
+                      .join(' · ');
+                    return (
+                      <li
+                        key={sponsor.sponsor_id || index}
+                        className="flex flex-wrap items-baseline gap-x-2 bg-card border rounded-md p-3"
+                      >
+                        <span className="font-medium">{sponsor.sponsor_name}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {sponsor.sponsor_type}
+                        </Badge>
+                        {meta && (
+                          <span className="text-sm text-muted-foreground">{meta}</span>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
-              </div>
-            )}
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  No sponsors listed for this bill yet.
+                </p>
+              )}
+            </div>
+
             
             <Tabs defaultValue="details">
               <TabsList className="mb-4">
