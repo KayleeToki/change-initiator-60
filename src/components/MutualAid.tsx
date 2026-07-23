@@ -44,7 +44,7 @@ const MutualAid = () => {
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <Button 
+          <Button asChild
             variant="outline" 
             onClick={() => navigate('/')}
           >
@@ -150,12 +150,10 @@ const MutualAid = () => {
                       </CardContent>
                       {resource.url && (
                         <CardFooter>
-                          <Button 
-                            variant="outline" 
-                            className="w-full"
-                            onClick={() => window.open(resource.url, '_blank')}
-                          >
-                            <ExternalLink className="h-4 w-4 mr-2" /> Learn More
+                          <Button asChild variant="outline" className="w-full">
+                            <a href={resource.url} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="h-4 w-4 mr-2" /> Learn More
+                            </a>
                           </Button>
                         </CardFooter>
                       )}
@@ -202,12 +200,10 @@ const MutualAid = () => {
                       </CardContent>
                       {resource.url && (
                         <CardFooter>
-                          <Button 
-                            variant="outline" 
-                            className="w-full"
-                            onClick={() => window.open(resource.url, '_blank')}
-                          >
-                            <ExternalLink className="h-4 w-4 mr-2" /> Learn More
+                          <Button asChild variant="outline" className="w-full">
+                            <a href={resource.url} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="h-4 w-4 mr-2" /> Learn More
+                            </a>
                           </Button>
                         </CardFooter>
                       )}
@@ -248,12 +244,10 @@ const MutualAid = () => {
                       </CardContent>
                       {resource.url && (
                         <CardFooter>
-                          <Button 
-                            variant="outline" 
-                            className="w-full"
-                            onClick={() => window.open(resource.url, '_blank')}
-                          >
-                            <ExternalLink className="h-4 w-4 mr-2" /> Learn More
+                          <Button asChild variant="outline" className="w-full">
+                            <a href={resource.url} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="h-4 w-4 mr-2" /> Learn More
+                            </a>
                           </Button>
                         </CardFooter>
                       )}
@@ -300,12 +294,10 @@ const MutualAid = () => {
                       </CardContent>
                       {resource.url && (
                         <CardFooter>
-                          <Button 
-                            variant="outline" 
-                            className="w-full"
-                            onClick={() => window.open(resource.url, '_blank')}
-                          >
-                            <ExternalLink className="h-4 w-4 mr-2" /> Learn More
+                          <Button asChild variant="outline" className="w-full">
+                            <a href={resource.url} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="h-4 w-4 mr-2" /> Learn More
+                            </a>
                           </Button>
                         </CardFooter>
                       )}

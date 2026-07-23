@@ -11,8 +11,16 @@ const LandingPage = () => {
 
   const handleYesClick = () => navigate('/map');
   const handleNoClick = () => {
-    window.open('https://www.google.com', '_blank', 'noopener,noreferrer');
+    // Escape the preview iframe reliably via a real anchor click
+    const a = document.createElement('a');
+    a.href = 'https://www.google.com';
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
   };
+
 
 
   return (
