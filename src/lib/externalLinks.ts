@@ -10,8 +10,5 @@ export const openExternalLink = (url: string) => {
 
   if (opened) {
     opened.opener = null;
-    return;
   }
-
-  window.location.assign(destination);
 };
