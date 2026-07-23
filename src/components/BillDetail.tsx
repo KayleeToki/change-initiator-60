@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import ApiKeyForm from '@/components/ApiKeyForm';
-import { normalizeExternalUrl, openExternalLink } from '@/lib/externalLinks';
+import { openExternalLink } from '@/lib/externalLinks';
 
 const BillDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -252,25 +252,16 @@ const BillDetail = () => {
                       {bill.media.documents.map((url, index) => (
                         <Button
                           key={index}
-                          asChild
                           variant="outline"
                           className="w-full justify-start"
+                          type="button"
+                          onClick={() => openExternalLink(url)}
                         >
-                          <a
-                            href={normalizeExternalUrl(url)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(event) => {
-                              event.preventDefault();
-                              openExternalLink(url);
-                            }}
-                          >
-                            <FileText className="h-4 w-4 mr-2" />
-                            <span className="mr-2">Document {index + 1}</span>
-                            <span className="text-blue-500 ml-auto">
-                              <Download className="h-4 w-4" />
-                            </span>
-                          </a>
+                          <FileText className="h-4 w-4 mr-2" />
+                          <span className="mr-2">Document {index + 1}</span>
+                          <span className="text-primary ml-auto">
+                            <Download className="h-4 w-4" />
+                          </span>
                         </Button>
                       ))}
 
@@ -280,25 +271,16 @@ const BillDetail = () => {
                   <div className="bg-card p-4 rounded-lg border">
                     <h4 className="font-medium mb-2">Bill Text</h4>
                     <Button
-                      asChild
                       variant="outline"
                       className="w-full justify-start"
+                      type="button"
+                      onClick={() => openExternalLink(bill.text_url!)}
                     >
-                      <a
-                        href={normalizeExternalUrl(bill.text_url)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          openExternalLink(bill.text_url!);
-                        }}
-                      >
-                        <FileText className="h-4 w-4 mr-2" />
-                        <span className="mr-2">View Bill Text</span>
-                        <span className="text-blue-500 ml-auto">
-                          <Download className="h-4 w-4" />
-                        </span>
-                      </a>
+                      <FileText className="h-4 w-4 mr-2" />
+                      <span className="mr-2">View Bill Text</span>
+                      <span className="text-primary ml-auto">
+                        <Download className="h-4 w-4" />
+                      </span>
                     </Button>
                   </div>
 
@@ -312,22 +294,13 @@ const BillDetail = () => {
                   <div className="bg-card p-4 rounded-lg border mt-4">
                     <h4 className="font-medium mb-2">Official Bill Page</h4>
                     <Button
-                      asChild
                       variant="outline"
                       className="w-full justify-start"
+                      type="button"
+                      onClick={() => openExternalLink(bill.url!)}
                     >
-                      <a
-                        href={normalizeExternalUrl(bill.url)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          openExternalLink(bill.url!);
-                        }}
-                      >
-                        <Link className="h-4 w-4 mr-2" />
-                        <span>Visit Official Bill Page</span>
-                      </a>
+                      <Link className="h-4 w-4 mr-2" />
+                      <span>Visit Official Bill Page</span>
                     </Button>
 
                   </div>
