@@ -244,7 +244,29 @@ export async function getBillById(id: string): Promise<Bill | null> {
       last_action_date: billData.last_action_date,
       last_action: billData.last_action,
       status: billData.status || 'Pending',
-      sponsors: billData.sponsors || [],
+      sponsors: Array.isArray(billData.sponsors)
+        ? billData.sponsors.map((s: any) => {
+            const fullName =
+              s.name ||
+              [s.first_name, s.middle_name, s.last_name, s.suffix]
+                .filter(Boolean)
+                .join(' ')
+                .trim() ||
+              'Unknown sponsor';
+            const type =
+              s.sponsor_type_desc ||
+              (s.sponsor_type_id === 1 ? 'Primary Sponsor' : s.sponsor_type_id === 2 ? 'Co-Sponsor' : 'Sponsor');
+            return {
+              sponsor_id: s.people_id ?? s.sponsor_id ?? 0,
+              sponsor_name: fullName,
+              sponsor_type: type,
+              party: s.party || undefined,
+              district: s.district || undefined,
+              role: s.role || s.role_abbr || undefined,
+            };
+          })
+        : [],
+
       url: billData.url,
       text_url: billData.texts && billData.texts.length > 0 ? billData.texts[0].url : undefined,
       history: billData.history || [],
