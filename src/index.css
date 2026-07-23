@@ -1,69 +1,45 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   Emerald Prestige — cohesive site palette
+   Deep emerald backgrounds, gold accents, warm cream typography
+   ============================================================ */
+
 @layer base {
   :root {
-    --background: 0 0% 6%;
-    --foreground: 0 0% 98%;
+    /* Core surface: deep emerald, near-black */
+    --background: 158 60% 8%;
+    --foreground: 42 40% 94%;
 
-    --card: 0 0% 9%;
-    --card-foreground: 0 0% 98%;
+    --card: 158 45% 12%;
+    --card-foreground: 42 40% 94%;
 
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 158 45% 12%;
+    --popover-foreground: 42 40% 94%;
 
-    --primary: 152 65% 45%;
-    --primary-foreground: 0 0% 6%;
+    /* Primary = warm gold */
+    --primary: 44 62% 54%;
+    --primary-foreground: 158 60% 10%;
 
-    --secondary: 0 0% 14%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 158 35% 16%;
+    --secondary-foreground: 42 40% 94%;
 
-    --muted: 0 0% 14%;
-    --muted-foreground: 0 0% 70%;
+    --muted: 158 30% 18%;
+    --muted-foreground: 42 20% 78%;
 
-    --accent: 152 50% 30%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 156 55% 30%;
+    --accent-foreground: 42 40% 96%;
 
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 42 40% 96%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 152 65% 45%;
+    --border: 158 30% 22%;
+    --input: 158 30% 22%;
+    --ring: 44 62% 54%;
 
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 152 70% 50%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.625rem;
   }
 }
 
@@ -71,65 +47,66 @@
   * {
     @apply border-border;
   }
-
+  html {
+    font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  h1, h2, h3, .font-serif {
+    font-family: 'Libre Baskerville', ui-serif, Georgia, serif;
+    letter-spacing: -0.01em;
   }
 }
 
-/* Custom classes */
-.urgent {
-  @apply bg-red-500 text-white;
-}
+/* Priority accents (kept for legacy) */
+.urgent { @apply bg-red-500 text-white; }
+.medium-priority { @apply bg-orange-400 text-white; }
+.low-priority { @apply bg-yellow-300 text-gray-800; }
 
-.medium-priority {
-  @apply bg-orange-400 text-white;
-}
+/* ------------------------------------------------------------
+   Scoped page themes
+   ------------------------------------------------------------ */
 
-.low-priority {
-  @apply bg-yellow-300 text-gray-800;
-}
-
-/* Scoped page themes */
-
-/* Moody rook theme — gold on warm charcoal. Used by Legislation list & Forum. */
+/* Rook (Legislation list + Forum): richer emerald, more gold */
 .theme-rook {
-  --background: 32 10% 13%;
-  --foreground: 42 32% 92%;
-  --card: 30 11% 17%;
-  --card-foreground: 42 32% 94%;
-  --popover: 30 11% 17%;
-  --popover-foreground: 42 32% 94%;
-  --primary: 42 78% 62%;
-  --primary-foreground: 28 25% 10%;
-  --secondary: 32 10% 22%;
-  --secondary-foreground: 42 32% 92%;
-  --muted: 32 10% 22%;
-  --muted-foreground: 38 14% 75%;
-  --accent: 42 60% 48%;
-  --accent-foreground: 42 30% 96%;
-  --border: 35 18% 28%;
-  --input: 35 18% 28%;
-  --ring: 42 78% 62%;
+  --background: 158 55% 10%;
+  --foreground: 42 45% 94%;
+  --card: 158 40% 14%;
+  --card-foreground: 42 45% 95%;
+  --popover: 158 40% 14%;
+  --popover-foreground: 42 45% 95%;
+  --primary: 44 68% 58%;
+  --primary-foreground: 158 60% 10%;
+  --secondary: 158 30% 18%;
+  --secondary-foreground: 42 40% 94%;
+  --muted: 158 28% 20%;
+  --muted-foreground: 42 22% 80%;
+  --accent: 44 50% 44%;
+  --accent-foreground: 158 60% 10%;
+  --border: 158 25% 26%;
+  --input: 158 25% 26%;
+  --ring: 44 68% 58%;
 }
 
-/* Lighter version of the black/green theme. Used by individual Bill pages. */
+/* Bill detail: lighter emerald surface for reading */
 .theme-bill {
-  --background: 0 0% 20%;
-  --foreground: 0 0% 98%;
-  --card: 0 0% 24%;
-  --card-foreground: 0 0% 98%;
-  --popover: 0 0% 24%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 152 62% 62%;
-  --primary-foreground: 0 0% 10%;
-  --secondary: 0 0% 30%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 0 0% 30%;
-  --muted-foreground: 0 0% 82%;
-  --accent: 152 50% 48%;
-  --accent-foreground: 0 0% 98%;
-  --border: 0 0% 34%;
-  --input: 0 0% 34%;
-  --ring: 152 62% 62%;
+  --background: 158 38% 16%;
+  --foreground: 42 40% 96%;
+  --card: 158 32% 20%;
+  --card-foreground: 42 40% 96%;
+  --popover: 158 32% 20%;
+  --popover-foreground: 42 40% 96%;
+  --primary: 44 68% 60%;
+  --primary-foreground: 158 60% 12%;
+  --secondary: 158 25% 26%;
+  --secondary-foreground: 42 40% 96%;
+  --muted: 158 22% 28%;
+  --muted-foreground: 42 20% 82%;
+  --accent: 156 45% 40%;
+  --accent-foreground: 42 40% 96%;
+  --border: 158 20% 32%;
+  --input: 158 20% 32%;
+  --ring: 44 68% 60%;
 }
