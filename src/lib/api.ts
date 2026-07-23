@@ -22,7 +22,11 @@ export interface Bill {
     sponsor_id: number;
     sponsor_name: string;
     sponsor_type: string;
+    party?: string;
+    district?: string;
+    role?: string;
   }>;
+
   media?: {
     images?: string[];
     videos?: string[];
