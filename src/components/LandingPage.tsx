@@ -36,34 +36,113 @@ const LandingPage = () => {
         }}
       />
 
-      {/* Raven — top left */}
-      <img
-        src={ravenSilhouette}
-        alt=""
-        aria-hidden="true"
-        className="absolute top-0 left-0 pointer-events-none object-contain"
-        style={{
-          width: 'min(30vw, 280px)',
-          height: 'min(30vw, 280px)',
-          opacity: 0.55,
-          filter: 'brightness(0) saturate(100%) invert(72%) sepia(46%) saturate(468%) hue-rotate(6deg) brightness(92%) contrast(88%)',
-        }}
-      />
+      {/* Raven — top left with filigree semi-circle */}
+      <div
+        className="absolute top-0 left-0 pointer-events-none"
+        style={{ width: 'min(34vw, 320px)', height: 'min(34vw, 320px)' }}
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 200 200"
+          className="absolute inset-0 w-full h-full"
+          style={{ color: 'hsl(44 62% 60%)' }}
+        >
+          <defs>
+            <radialGradient id="ravenGlow" cx="0%" cy="0%" r="100%">
+              <stop offset="0%" stopColor="hsl(44 62% 55%)" stopOpacity="0.18" />
+              <stop offset="70%" stopColor="hsl(44 62% 55%)" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <circle cx="0" cy="0" r="200" fill="url(#ravenGlow)" />
+          {/* concentric arcs (semi-circle centered at top-left corner) */}
+          <g fill="none" stroke="currentColor" strokeLinecap="round">
+            <path d="M 170 0 A 170 170 0 0 1 0 170" strokeOpacity="0.55" strokeWidth="1.2" />
+            <path d="M 150 0 A 150 150 0 0 1 0 150" strokeOpacity="0.35" strokeWidth="0.8" strokeDasharray="2 6" />
+            <path d="M 190 0 A 190 190 0 0 1 0 190" strokeOpacity="0.25" strokeWidth="0.6" />
+          </g>
+          {/* filigree flourishes along the main arc */}
+          <g fill="currentColor" opacity="0.75">
+            {[15, 35, 55, 75].map((deg) => {
+              const rad = (deg * Math.PI) / 180;
+              const r = 170;
+              const cx = Math.cos(rad) * r;
+              const cy = Math.sin(rad) * r;
+              return (
+                <g key={deg} transform={`translate(${cx} ${cy}) rotate(${deg + 90})`}>
+                  <circle r="2.2" />
+                  <path d="M -6 0 Q 0 -5 6 0 Q 0 5 -6 0 Z" opacity="0.6" />
+                </g>
+              );
+            })}
+          </g>
+        </svg>
+        <img
+          src={ravenSilhouette}
+          alt=""
+          aria-hidden="true"
+          className="absolute top-0 left-0 object-contain"
+          style={{
+            width: '78%',
+            height: '78%',
+            opacity: 0.6,
+            filter: 'brightness(0) saturate(100%) invert(72%) sepia(46%) saturate(468%) hue-rotate(6deg) brightness(92%) contrast(88%)',
+          }}
+        />
+      </div>
 
-      {/* Rook — bottom right */}
-      <img
-        src={chessRook}
-        alt=""
-        aria-hidden="true"
-        loading="lazy"
-        className="absolute bottom-0 right-0 pointer-events-none object-contain"
-        style={{
-          width: 'min(24vw, 220px)',
-          height: 'min(24vw, 220px)',
-          opacity: 0.5,
-          filter: 'brightness(0) saturate(100%) invert(72%) sepia(46%) saturate(468%) hue-rotate(6deg) brightness(92%) contrast(88%)',
-        }}
-      />
+      {/* Rook — bottom right with filigree semi-circle */}
+      <div
+        className="absolute bottom-0 right-0 pointer-events-none"
+        style={{ width: 'min(28vw, 260px)', height: 'min(28vw, 260px)' }}
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 200 200"
+          className="absolute inset-0 w-full h-full"
+          style={{ color: 'hsl(44 62% 60%)' }}
+        >
+          <defs>
+            <radialGradient id="rookGlow" cx="100%" cy="100%" r="100%">
+              <stop offset="0%" stopColor="hsl(44 62% 55%)" stopOpacity="0.18" />
+              <stop offset="70%" stopColor="hsl(44 62% 55%)" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <circle cx="200" cy="200" r="200" fill="url(#rookGlow)" />
+          <g fill="none" stroke="currentColor" strokeLinecap="round">
+            <path d="M 30 200 A 170 170 0 0 0 200 30" strokeOpacity="0.55" strokeWidth="1.2" />
+            <path d="M 50 200 A 150 150 0 0 0 200 50" strokeOpacity="0.35" strokeWidth="0.8" strokeDasharray="2 6" />
+            <path d="M 10 200 A 190 190 0 0 0 200 10" strokeOpacity="0.25" strokeWidth="0.6" />
+          </g>
+          <g fill="currentColor" opacity="0.75">
+            {[15, 35, 55, 75].map((deg) => {
+              const rad = (deg * Math.PI) / 180;
+              const r = 170;
+              const cx = 200 - Math.cos(rad) * r;
+              const cy = 200 - Math.sin(rad) * r;
+              return (
+                <g key={deg} transform={`translate(${cx} ${cy}) rotate(${deg - 90})`}>
+                  <circle r="2.2" />
+                  <path d="M -6 0 Q 0 -5 6 0 Q 0 5 -6 0 Z" opacity="0.6" />
+                </g>
+              );
+            })}
+          </g>
+        </svg>
+        <img
+          src={chessRook}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          className="absolute bottom-0 right-0 object-contain"
+          style={{
+            width: '78%',
+            height: '78%',
+            opacity: 0.55,
+            filter: 'brightness(0) saturate(100%) invert(72%) sepia(46%) saturate(468%) hue-rotate(6deg) brightness(92%) contrast(88%)',
+          }}
+        />
+      </div>
+
 
       {/* Content card */}
       <motion.div
