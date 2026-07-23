@@ -42,17 +42,17 @@ const categorize = (bill: Bill): Category => {
 };
 
 const CATEGORY_COLORS: Record<Category, string> = {
-  Education: 'bg-blue-600 text-white',
-  Environment: 'bg-emerald-600 text-white',
-  Health: 'bg-rose-600 text-white',
-  Transportation: 'bg-slate-600 text-white',
-  'Public Safety': 'bg-amber-600 text-white',
-  'Economy & Taxes': 'bg-yellow-600 text-white',
-  'Civil Rights': 'bg-purple-600 text-white',
-  'Government & Elections': 'bg-indigo-600 text-white',
-  Housing: 'bg-orange-600 text-white',
-  Labor: 'bg-teal-600 text-white',
-  Other: 'bg-zinc-600 text-white',
+  Education: 'bg-primary/15 text-primary border border-primary/30',
+  Environment: 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30',
+  Health: 'bg-rose-400/15 text-rose-200 border border-rose-400/30',
+  Transportation: 'bg-slate-400/15 text-slate-200 border border-slate-400/30',
+  'Public Safety': 'bg-amber-400/15 text-amber-200 border border-amber-400/30',
+  'Economy & Taxes': 'bg-yellow-400/15 text-yellow-200 border border-yellow-400/30',
+  'Civil Rights': 'bg-purple-400/15 text-purple-200 border border-purple-400/30',
+  'Government & Elections': 'bg-indigo-400/15 text-indigo-200 border border-indigo-400/30',
+  Housing: 'bg-orange-400/15 text-orange-200 border border-orange-400/30',
+  Labor: 'bg-teal-400/15 text-teal-200 border border-teal-400/30',
+  Other: 'bg-muted text-muted-foreground border border-border',
 };
 
 const BillsList = () => {

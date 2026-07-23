@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { ArrowRight } from 'lucide-react';
 import ravenSilhouette from "@/assets/raven-silhouette.png";
 import chessRook from "@/assets/chess-rook.png";
 
@@ -12,66 +13,101 @@ const LandingPage = () => {
   const handleNoClick = () => { window.location.href = 'https://www.google.com'; };
 
   return (
-    <div
-      className="relative flex flex-col items-center justify-center min-h-screen p-4 overflow-hidden"
-      style={{
-        backgroundImage:
-          'linear-gradient(45deg, #d4d4d4 25%, transparent 25%), linear-gradient(-45deg, #d4d4d4 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #d4d4d4 75%), linear-gradient(-45deg, transparent 75%, #d4d4d4 75%)',
-        backgroundSize: '160px 160px',
-        backgroundPosition: '0 0, 0 80px, 80px -80px, -80px 0px',
-        backgroundColor: '#f5f5f5',
-      }}
-    >
-      {/* Raven silhouette - top left corner */}
+    <div className="relative flex flex-col items-center justify-center min-h-screen p-6 overflow-hidden bg-background text-foreground">
+      {/* Layered emerald + gold ambience */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(1200px 700px at 15% 10%, hsl(156 55% 18% / 0.9), transparent 60%),' +
+            'radial-gradient(1000px 600px at 90% 90%, hsl(44 55% 20% / 0.55), transparent 60%),' +
+            'linear-gradient(180deg, hsl(158 60% 6%) 0%, hsl(158 55% 10%) 60%, hsl(158 60% 7%) 100%)',
+        }}
+      />
+      {/* Subtle grain / weave */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none opacity-[0.08] mix-blend-overlay"
+        style={{
+          backgroundImage:
+            'repeating-linear-gradient(45deg, hsl(44 60% 70%) 0 1px, transparent 1px 24px),' +
+            'repeating-linear-gradient(-45deg, hsl(44 60% 70%) 0 1px, transparent 1px 24px)',
+        }}
+      />
+
+      {/* Raven — top left */}
       <img
         src={ravenSilhouette}
         alt=""
         aria-hidden="true"
-        width={1024}
-        height={1024}
-        className="absolute top-0 left-0 pointer-events-none object-contain mix-blend-multiply"
-        style={{ width: 'min(32vw, 300px)', height: 'min(32vw, 300px)', opacity: 0.92 }}
+        className="absolute top-0 left-0 pointer-events-none object-contain"
+        style={{
+          width: 'min(30vw, 280px)',
+          height: 'min(30vw, 280px)',
+          opacity: 0.55,
+          filter: 'brightness(0) saturate(100%) invert(72%) sepia(46%) saturate(468%) hue-rotate(6deg) brightness(92%) contrast(88%)',
+        }}
       />
 
-      {/* Chess rook piece - bottom right corner */}
+      {/* Rook — bottom right */}
       <img
         src={chessRook}
         alt=""
         aria-hidden="true"
-        width={1024}
-        height={1024}
         loading="lazy"
-        className="absolute bottom-0 right-0 pointer-events-none object-contain mix-blend-multiply"
-        style={{ width: 'min(26vw, 240px)', height: 'min(26vw, 240px)', opacity: 0.88 }}
+        className="absolute bottom-0 right-0 pointer-events-none object-contain"
+        style={{
+          width: 'min(24vw, 220px)',
+          height: 'min(24vw, 220px)',
+          opacity: 0.5,
+          filter: 'brightness(0) saturate(100%) invert(72%) sepia(46%) saturate(468%) hue-rotate(6deg) brightness(92%) contrast(88%)',
+        }}
       />
 
+      {/* Content card */}
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="relative z-10 text-center max-w-3xl mx-auto bg-black/70 backdrop-blur-sm rounded-2xl p-10 border border-white/10 shadow-2xl"
+        transition={{ duration: 0.7, ease: 'easeOut' }}
+        className="relative z-10 text-center max-w-3xl mx-auto px-8 py-14 sm:px-14"
       >
-        <h1 className="text-5xl font-bold mb-8 text-white md:text-6xl drop-shadow-lg">
-          Would you like to make a change?
-        </h1>
-        <p className="text-xl mb-10 font-medium" style={{ color: '#5ef38c' }}>
-          Our voices matter. Together, we can build a better America through community organization and civic planning.
+        <p className="uppercase tracking-[0.45em] text-xs sm:text-sm text-primary/90 mb-6 font-medium">
+          Change Initiator
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-6 justify-center mt-6">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+        <div
+          aria-hidden="true"
+          className="mx-auto mb-8 h-px w-24"
+          style={{ background: 'linear-gradient(90deg, transparent, hsl(var(--primary)), transparent)' }}
+        />
+
+        <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-8 text-foreground">
+          Would you like to <em className="text-primary not-italic">make a change?</em>
+        </h1>
+
+        <p className="text-lg md:text-xl leading-relaxed mb-10 text-foreground/85 max-w-2xl mx-auto">
+          Our voices matter. Together, we can build a better America through
+          community organization and civic planning.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button
               onClick={handleYesClick}
-              className="bg-green-500 hover:bg-green-600 text-white text-xl py-6 px-10 rounded-lg shadow-lg"
+              size="lg"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground text-base font-medium tracking-wide px-8 py-6 rounded-md shadow-lg shadow-primary/20"
             >
-              Yes, I'm ready
+              Yes, I'm ready <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </motion.div>
 
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button
               onClick={handleNoClick}
-              className="bg-red-500 hover:bg-red-600 text-white text-xl py-6 px-10 rounded-lg shadow-lg"
+              variant="outline"
+              size="lg"
+              className="border-primary/40 text-foreground hover:bg-primary/10 hover:text-primary text-base font-medium tracking-wide px-8 py-6 rounded-md bg-transparent"
             >
               No, take me away
             </Button>
@@ -79,8 +115,10 @@ const LandingPage = () => {
         </div>
       </motion.div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center z-10 bg-black/50 px-5 py-2.5 rounded">
-        <p className="text-white text-lg font-medium">A platform for civic engagement and community action</p>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center z-10">
+        <p className="font-serif italic text-white text-lg tracking-wide">
+          A platform for civic engagement and community action
+        </p>
       </div>
     </div>
   );
