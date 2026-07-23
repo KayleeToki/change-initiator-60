@@ -294,14 +294,17 @@ const BillDetail = () => {
                 {bill.url && (
                   <div className="bg-card p-4 rounded-lg border mt-4">
                     <h4 className="font-medium mb-2">Official Bill Page</h4>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      asChild
+                      variant="outline"
                       className="w-full justify-start"
-                      onClick={() => window.open(bill.url, '_blank')}
                     >
-                      <Link className="h-4 w-4 mr-2" />
-                      <span>Visit Official Bill Page</span>
+                      <a href={bill.url} target="_blank" rel="noopener noreferrer">
+                        <Link className="h-4 w-4 mr-2" />
+                        <span>Visit Official Bill Page</span>
+                      </a>
                     </Button>
+
                   </div>
                 )}
               </TabsContent>
