@@ -249,19 +249,22 @@ const BillDetail = () => {
                     <h4 className="font-medium mb-2">Official Documents</h4>
                     <div className="space-y-2">
                       {bill.media.documents.map((url, index) => (
-                        <Button 
-                          key={index} 
-                          variant="outline" 
+                        <Button
+                          key={index}
+                          asChild
+                          variant="outline"
                           className="w-full justify-start"
-                          onClick={() => window.open(url, '_blank')}
                         >
-                          <FileText className="h-4 w-4 mr-2" />
-                          <span className="mr-2">Document {index + 1}</span>
-                          <span className="text-blue-500 ml-auto">
-                            <Download className="h-4 w-4" />
-                          </span>
+                          <a href={url} target="_blank" rel="noopener noreferrer">
+                            <FileText className="h-4 w-4 mr-2" />
+                            <span className="mr-2">Document {index + 1}</span>
+                            <span className="text-blue-500 ml-auto">
+                              <Download className="h-4 w-4" />
+                            </span>
+                          </a>
                         </Button>
                       ))}
+
                     </div>
                   </div>
                 ) : bill.text_url ? (
