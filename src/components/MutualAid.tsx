@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Search, MapPin, CalendarDays, Phone, ExternalLink, Utensils, Home, Calendar } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
+import { normalizeExternalUrl, openExternalLink } from '@/lib/externalLinks';
 
 const MutualAid = () => {
   const navigate = useNavigate();
@@ -151,7 +152,15 @@ const MutualAid = () => {
                       {resource.url && (
                         <CardFooter>
                           <Button asChild variant="outline" className="w-full">
-                            <a href={resource.url} target="_blank" rel="noopener noreferrer">
+                            <a
+                              href={normalizeExternalUrl(resource.url)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                openExternalLink(resource.url!);
+                              }}
+                            >
                               <ExternalLink className="h-4 w-4 mr-2" /> Learn More
                             </a>
                           </Button>
@@ -201,7 +210,15 @@ const MutualAid = () => {
                       {resource.url && (
                         <CardFooter>
                           <Button asChild variant="outline" className="w-full">
-                            <a href={resource.url} target="_blank" rel="noopener noreferrer">
+                            <a
+                              href={normalizeExternalUrl(resource.url)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                openExternalLink(resource.url!);
+                              }}
+                            >
                               <ExternalLink className="h-4 w-4 mr-2" /> Learn More
                             </a>
                           </Button>
@@ -245,7 +262,15 @@ const MutualAid = () => {
                       {resource.url && (
                         <CardFooter>
                           <Button asChild variant="outline" className="w-full">
-                            <a href={resource.url} target="_blank" rel="noopener noreferrer">
+                            <a
+                              href={normalizeExternalUrl(resource.url)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                openExternalLink(resource.url!);
+                              }}
+                            >
                               <ExternalLink className="h-4 w-4 mr-2" /> Learn More
                             </a>
                           </Button>
@@ -295,7 +320,15 @@ const MutualAid = () => {
                       {resource.url && (
                         <CardFooter>
                           <Button asChild variant="outline" className="w-full">
-                            <a href={resource.url} target="_blank" rel="noopener noreferrer">
+                            <a
+                              href={normalizeExternalUrl(resource.url)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                openExternalLink(resource.url!);
+                              }}
+                            >
                               <ExternalLink className="h-4 w-4 mr-2" /> Learn More
                             </a>
                           </Button>

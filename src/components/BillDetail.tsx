@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import ApiKeyForm from '@/components/ApiKeyForm';
+import { normalizeExternalUrl, openExternalLink } from '@/lib/externalLinks';
 
 const BillDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -255,7 +256,15 @@ const BillDetail = () => {
                           variant="outline"
                           className="w-full justify-start"
                         >
-                          <a href={url} target="_blank" rel="noopener noreferrer">
+                          <a
+                            href={normalizeExternalUrl(url)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              openExternalLink(url);
+                            }}
+                          >
                             <FileText className="h-4 w-4 mr-2" />
                             <span className="mr-2">Document {index + 1}</span>
                             <span className="text-blue-500 ml-auto">
@@ -275,7 +284,15 @@ const BillDetail = () => {
                       variant="outline"
                       className="w-full justify-start"
                     >
-                      <a href={bill.text_url} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={normalizeExternalUrl(bill.text_url)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          openExternalLink(bill.text_url!);
+                        }}
+                      >
                         <FileText className="h-4 w-4 mr-2" />
                         <span className="mr-2">View Bill Text</span>
                         <span className="text-blue-500 ml-auto">
@@ -299,7 +316,15 @@ const BillDetail = () => {
                       variant="outline"
                       className="w-full justify-start"
                     >
-                      <a href={bill.url} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={normalizeExternalUrl(bill.url)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          openExternalLink(bill.url!);
+                        }}
+                      >
                         <Link className="h-4 w-4 mr-2" />
                         <span>Visit Official Bill Page</span>
                       </a>
