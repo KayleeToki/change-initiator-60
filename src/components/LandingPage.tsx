@@ -10,7 +10,10 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   const handleYesClick = () => navigate('/map');
-  const handleNoClick = () => { window.location.href = 'https://www.google.com'; };
+  const handleNoClick = () => {
+    window.open('https://www.google.com', '_blank', 'noopener,noreferrer');
+  };
+
 
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen p-6 overflow-hidden bg-background text-foreground">
