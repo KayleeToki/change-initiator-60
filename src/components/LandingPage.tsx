@@ -5,21 +5,13 @@ import { motion } from "framer-motion";
 import { ArrowRight } from 'lucide-react';
 import ravenSilhouette from "@/assets/raven-silhouette.png";
 import chessRook from "@/assets/chess-rook.png";
+import { openExternalLink } from '@/lib/externalLinks';
 
 const LandingPage = () => {
   const navigate = useNavigate();
 
   const handleYesClick = () => navigate('/map');
-  const handleNoClick = () => {
-    // Escape the preview iframe reliably via a real anchor click
-    const a = document.createElement('a');
-    a.href = 'https://www.google.com';
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  };
+  const handleNoClick = () => openExternalLink('https://www.google.com');
 
 
 
