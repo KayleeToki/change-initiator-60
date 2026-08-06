@@ -12,13 +12,15 @@ import {
   FileText, 
   Users, 
   Download, 
+  Copy,
   Link, 
   AlertTriangle, 
   History 
 } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import ApiKeyForm from '@/components/ApiKeyForm';
-import { openExternalLink } from '@/lib/externalLinks';
+import { copyExternalLink, openExternalLink } from '@/lib/externalLinks';
+import { toast } from 'sonner';
 
 const BillDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -63,6 +65,27 @@ const BillDetail = () => {
     if (!dateString) return 'No date available';
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const handleLegiscanLink = async (url: string) => {
+    const copied = await copyExternalLink(url);
+    if (copied) {
+      toast.success('LegiScan address copied', {
+        description: 'Paste it into your browser address bar to open it outside the preview.',
+      });
+      return;
+    }
+
+    toast.error('Could not copy the LegiScan address');
+  };
+
+  const handleExternalLink = (url: string) => {
+    if (/^https?:\/\/([^/]+\.)?legiscan\.com(?:\/|$)/i.test(url.trim())) {
+      void handleLegiscanLink(url);
+      return;
+    }
+
+    openExternalLink(url);
   };
   
   if (loading) {
@@ -255,12 +278,12 @@ const BillDetail = () => {
                           variant="outline"
                           className="w-full justify-start"
                           type="button"
-                          onClick={() => openExternalLink(url)}
+                          onClick={() => handleExternalLink(url)}
                         >
                           <FileText className="h-4 w-4 mr-2" />
                           <span className="mr-2">Document {index + 1}</span>
                           <span className="text-primary ml-auto">
-                            <Download className="h-4 w-4" />
+                            {/legiscan\.com/i.test(url) ? <Copy className="h-4 w-4" /> : <Download className="h-4 w-4" />}
                           </span>
                         </Button>
                       ))}
@@ -274,12 +297,12 @@ const BillDetail = () => {
                       variant="outline"
                       className="w-full justify-start"
                       type="button"
-                      onClick={() => openExternalLink(bill.text_url!)}
+                      onClick={() => handleExternalLink(bill.text_url ?? '')}
                     >
                       <FileText className="h-4 w-4 mr-2" />
                       <span className="mr-2">View Bill Text</span>
                       <span className="text-primary ml-auto">
-                        <Download className="h-4 w-4" />
+                        {/legiscan\.com/i.test(bill.text_url) ? <Copy className="h-4 w-4" /> : <Download className="h-4 w-4" />}
                       </span>
                     </Button>
                   </div>
@@ -297,10 +320,10 @@ const BillDetail = () => {
                       variant="outline"
                       className="w-full justify-start"
                       type="button"
-                      onClick={() => openExternalLink(bill.url!)}
+                      onClick={() => handleExternalLink(bill.url ?? '')}
                     >
                       <Link className="h-4 w-4 mr-2" />
-                      <span>Visit Official Bill Page</span>
+                      <span>{/legiscan\.com/i.test(bill.url) ? 'Copy Official Bill Page Link' : 'Visit Official Bill Page'}</span>
                     </Button>
 
                   </div>
