@@ -58,12 +58,44 @@ const CATEGORY_COLORS: Record<Category, string> = {
   Other: 'bg-muted text-muted-foreground border border-border',
 };
 
+
+const CATEGORY_OPTIONS: Category[] = [
+  'Education',
+  'Environment',
+  'Health',
+  'Transportation',
+  'Public Safety',
+  'Economy & Taxes',
+  'Civil Rights',
+  'Government & Elections',
+  'Housing',
+  'Labor',
+  'Other',
+];
+
+const EXAMPLE_SEARCHES = ['environmental', 'education funding', 'emergency', 'voting rights', 'housing'];
+
+type SortOption = 'urgency' | 'emergency' | 'recent' | 'alphabetical';
+
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'urgency', label: 'Most time sensitive' },
+  { value: 'emergency', label: 'Emergency motions first' },
+  { value: 'recent', label: 'Most recent action' },
+  { value: 'alphabetical', label: 'Bill number (A–Z)' },
+];
+
+const EMERGENCY_PATTERN = /\b(emergenc|urgent|immediate|special session|expedite|declaration|disaster)\b/i;
+
 const BillsList = () => {
   const { state } = useParams<{ state: string }>();
   const navigate = useNavigate();
   const [bills, setBills] = useState<Bill[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [category, setCategory] = useState<'all' | Category>('all');
+  const [sortBy, setSortBy] = useState<SortOption>('urgency');
+
 
   useEffect(() => {
     const fetchBills = async () => {
