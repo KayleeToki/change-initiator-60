@@ -123,6 +123,38 @@ const BillsList = () => {
     fetchBills();
   }, [state]);
 
+  const visibleBills = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const filtered = bills.filter((bill) => {
+      const cat = categorize(bill);
+      if (category !== 'all' && cat !== category) return false;
+      if (!q) return true;
+      const haystack = `${bill.bill_number} ${bill.title} ${bill.description ?? ''} ${bill.status ?? ''} ${cat}`.toLowerCase();
+      return haystack.includes(q);
+    });
+
+    const urgencyOrder = { high: 0, medium: 1, low: 2 } as const;
+    const byDate = (a: Bill, b: Bill) =>
+      new Date(b.last_action_date).getTime() - new Date(a.last_action_date).getTime();
+
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'recent') return byDate(a, b);
+      if (sortBy === 'alphabetical') return (a.bill_number || '').localeCompare(b.bill_number || '');
+      if (sortBy === 'emergency') {
+        const emergencyScore = (bill: Bill) =>
+          EMERGENCY_PATTERN.test(`${bill.title} ${bill.description ?? ''} ${bill.status ?? ''}`) ? 0 : 1;
+        const diff = emergencyScore(a) - emergencyScore(b);
+        if (diff !== 0) return diff;
+      }
+      const urgencyDiff = urgencyOrder[a.urgency] - urgencyOrder[b.urgency];
+      if (urgencyDiff !== 0) return urgencyDiff;
+      return byDate(a, b);
+    });
+  }, [bills, query, category, sortBy]);
+
+  const filtersActive = query.trim() !== '' || category !== 'all';
+
+
   const formatDate = (dateString: string) => {
     if (!dateString) return 'No date available';
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
