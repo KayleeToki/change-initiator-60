@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Bill, getBillById } from '@/lib/api';
+import { Bill, getBillById, getBillsByState } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,15 +12,13 @@ import {
   FileText, 
   Users, 
   Download, 
-  Copy,
   Link, 
   AlertTriangle, 
   History 
 } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import ApiKeyForm from '@/components/ApiKeyForm';
-import { copyExternalLink, openExternalLink } from '@/lib/externalLinks';
-import { toast } from 'sonner';
+import { openExternalLink } from '@/lib/externalLinks';
 
 const BillDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -67,24 +65,7 @@ const BillDetail = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const handleLegiscanLink = async (url: string) => {
-    const copied = await copyExternalLink(url);
-    if (copied) {
-      toast.success('LegiScan address copied', {
-        description: 'Paste it into your browser address bar to open it outside the preview.',
-      });
-      return;
-    }
-
-    toast.error('Could not copy the LegiScan address');
-  };
-
   const handleExternalLink = (url: string) => {
-    if (/^https?:\/\/([^/]+\.)?legiscan\.com(?:\/|$)/i.test(url.trim())) {
-      void handleLegiscanLink(url);
-      return;
-    }
-
     openExternalLink(url);
   };
   
@@ -215,35 +196,14 @@ const BillDetail = () => {
             </div>
 
             
-            <Tabs defaultValue="details">
+            <Tabs defaultValue="documents">
               <TabsList className="mb-4">
-                <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="history">History</TabsTrigger>
                 <TabsTrigger value="documents">Documents</TabsTrigger>
+                <TabsTrigger value="history">History</TabsTrigger>
+                <TabsTrigger value="details">Details</TabsTrigger>
                 <TabsTrigger value="actions">Take Action</TabsTrigger>
               </TabsList>
-              
-              <TabsContent value="details" className="space-y-4">
-                <div className="bg-card p-4 rounded-lg border">
-                  <h4 className="font-medium">Current Status</h4>
-                  <p className="text-foreground/85">{bill.status}</p>
-                </div>
-                <div className="bg-card p-4 rounded-lg border">
-                  <h4 className="font-medium">State</h4>
-                  <p className="text-foreground/85">{bill.state}</p>
-                </div>
-                {bill.county && (
-                  <div className="bg-card p-4 rounded-lg border">
-                    <h4 className="font-medium">County</h4>
-                    <p className="text-foreground/85">{bill.county}</p>
-                  </div>
-                )}
-                <div className="bg-card p-4 rounded-lg border">
-                  <h4 className="font-medium">Last Action</h4>
-                  <p className="text-foreground/85">{bill.last_action}</p>
-                </div>
-              </TabsContent>
-              
+
               <TabsContent value="history">
                 {bill.history && bill.history.length > 0 ? (
                   <div className="space-y-2">
@@ -283,7 +243,7 @@ const BillDetail = () => {
                           <FileText className="h-4 w-4 mr-2" />
                           <span className="mr-2">Document {index + 1}</span>
                           <span className="text-primary ml-auto">
-                            {/legiscan\.com/i.test(url) ? <Copy className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                            <Download className="h-4 w-4" />
                           </span>
                         </Button>
                       ))}
@@ -302,7 +262,7 @@ const BillDetail = () => {
                       <FileText className="h-4 w-4 mr-2" />
                       <span className="mr-2">View Bill Text</span>
                       <span className="text-primary ml-auto">
-                        {/legiscan\.com/i.test(bill.text_url) ? <Copy className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                        <Download className="h-4 w-4" />
                       </span>
                     </Button>
                   </div>
@@ -323,11 +283,32 @@ const BillDetail = () => {
                       onClick={() => handleExternalLink(bill.url ?? '')}
                     >
                       <Link className="h-4 w-4 mr-2" />
-                      <span>{/legiscan\.com/i.test(bill.url) ? 'Copy Official Bill Page Link' : 'Visit Official Bill Page'}</span>
+                      <span>Visit Official Bill Page</span>
                     </Button>
 
                   </div>
                 )}
+              </TabsContent>
+              
+              <TabsContent value="details" className="space-y-4">
+                <div className="bg-card p-4 rounded-lg border">
+                  <h4 className="font-medium">Current Status</h4>
+                  <p className="text-foreground/85">{bill.status}</p>
+                </div>
+                <div className="bg-card p-4 rounded-lg border">
+                  <h4 className="font-medium">State</h4>
+                  <p className="text-foreground/85">{bill.state}</p>
+                </div>
+                {bill.county && (
+                  <div className="bg-card p-4 rounded-lg border">
+                    <h4 className="font-medium">County</h4>
+                    <p className="text-foreground/85">{bill.county}</p>
+                  </div>
+                )}
+                <div className="bg-card p-4 rounded-lg border">
+                  <h4 className="font-medium">Last Action</h4>
+                  <p className="text-foreground/85">{bill.last_action}</p>
+                </div>
               </TabsContent>
               
               <TabsContent value="actions">
