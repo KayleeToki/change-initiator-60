@@ -71,7 +71,9 @@ const MutualAid = () => {
             <div className="flex gap-2">
               <Input
                 value={zipCode}
-                onChange={(e) => setZipCode(e.target.value)}
+                onChange={(e) => setZipCode(e.target.value.replace(/\D/g, '').slice(0, 5))}
+                inputMode="numeric"
+                maxLength={5}
                 placeholder="Enter ZIP code"
                 className="max-w-xs"
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -79,7 +81,7 @@ const MutualAid = () => {
               <Button onClick={handleSearch} disabled={loading}>
                 {loading ? (
                   <div className="flex items-center">
-                    <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2"></div>
                     Searching...
                   </div>
                 ) : (
@@ -89,7 +91,14 @@ const MutualAid = () => {
                 )}
               </Button>
             </div>
+            {location && !loading && (
+              <p className="mt-3 text-sm text-muted-foreground flex items-center">
+                <MapPin className="h-4 w-4 mr-2 text-primary" />
+                Showing resources for <span className="text-foreground font-medium mx-1">{location.city}, {location.stateAbbr}</span> ({location.zip})
+              </p>
+            )}
           </CardContent>
+
         </Card>
         
         {loading ? (
