@@ -201,6 +201,85 @@ const BillsList = () => {
           </TooltipProvider>
         </div>
 
+        {/* Search & filter bar */}
+        <Card className="mb-8 bg-card/70 border-border">
+          <CardContent className="pt-6">
+            <div className="flex flex-col lg:flex-row gap-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search bills by topic, keyword, or bill number…"
+                  className="pl-9 pr-9"
+                  aria-label="Search bills"
+                />
+                {query && (
+                  <button
+                    onClick={() => setQuery('')}
+                    aria-label="Clear search"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+
+              <Select value={category} onValueChange={(v) => setCategory(v as 'all' | Category)}>
+                <SelectTrigger className="lg:w-56" aria-label="Filter by category">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All categories</SelectItem>
+                  {CATEGORY_OPTIONS.map((c) => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+                <SelectTrigger className="lg:w-56" aria-label="Sort bills">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SORT_OPTIONS.map((o) => (
+                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <span>Try:</span>
+              {EXAMPLE_SEARCHES.map((example) => (
+                <button
+                  key={example}
+                  onClick={() => setQuery(example)}
+                  className="rounded-full border border-primary/30 px-3 py-1 text-primary hover:bg-primary/10 transition-colors"
+                >
+                  {example}
+                </button>
+              ))}
+              {filtersActive && (
+                <button
+                  onClick={() => { setQuery(''); setCategory('all'); }}
+                  className="ml-auto underline hover:text-foreground"
+                >
+                  Clear filters
+                </button>
+              )}
+            </div>
+
+            {!loading && !error && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                Showing {visibleBills.length} of {bills.length} bills
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+
+
         {loading ? (
           <div className="space-y-4 mt-4">
             {[1, 2, 3].map((i) => (
