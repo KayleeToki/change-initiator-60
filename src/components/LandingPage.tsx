@@ -5,13 +5,13 @@ import { motion } from "framer-motion";
 import { ArrowRight } from 'lucide-react';
 import ravenSilhouette from "@/assets/raven-silhouette.png";
 import chessRook from "@/assets/chess-rook.png";
-import { openExternalLink } from '@/lib/externalLinks';
 
 const LandingPage = () => {
   const navigate = useNavigate();
 
   const handleYesClick = () => navigate('/map');
-  const handleNoClick = () => openExternalLink('https://www.google.com');
+
+
 
 
 
