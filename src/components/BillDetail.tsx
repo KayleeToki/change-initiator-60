@@ -60,12 +60,12 @@ const BillDetail = () => {
         const stateBills = await getBillsByState(bill.state);
         const map: Record<number, Array<{ id: string; bill_number: string }>> = {};
         stateBills.forEach((other) => {
-          if (String(other.id) === String(bill.id)) return;
+          if (String(other.bill_id) === String(bill.bill_id)) return;
           (other.sponsors || []).forEach((s) => {
             if (!s.sponsor_id) return;
             const list = map[s.sponsor_id] || (map[s.sponsor_id] = []);
-            if (!list.some((b) => b.id === String(other.id))) {
-              list.push({ id: String(other.id), bill_number: other.bill_number });
+            if (!list.some((b) => b.id === String(other.bill_id))) {
+              list.push({ id: String(other.bill_id), bill_number: other.bill_number });
             }
           });
         });
