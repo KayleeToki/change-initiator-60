@@ -302,10 +302,10 @@ const BillsList = () => {
               </Button>
             </div>
           </Card>
-        ) : bills.length > 0 ? (
+        ) : visibleBills.length > 0 ? (
           <div className="space-y-4 mt-4">
-            {bills.map((bill) => {
-              const category = categorize(bill);
+            {visibleBills.map((bill) => {
+              const billCategory = categorize(bill);
               return (
                 <Card
                   key={bill.bill_id}
@@ -314,7 +314,7 @@ const BillsList = () => {
                 >
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xl font-semibold flex items-center gap-3 text-card-foreground">
-                      <Badge className={CATEGORY_COLORS[category]}>{category}</Badge>
+                      <Badge className={CATEGORY_COLORS[billCategory]}>{billCategory}</Badge>
                       {bill.bill_number}: {bill.title}
                     </CardTitle>
                   </CardHeader>
@@ -332,9 +332,19 @@ const BillsList = () => {
           </div>
         ) : (
           <Card className="w-full p-6 text-center mt-4">
-            <p className="text-muted-foreground">No bills found for {state}.</p>
+            <p className="text-muted-foreground">
+              {bills.length > 0
+                ? `No bills match your search in ${state}. Try a different keyword or category.`
+                : `No bills found for ${state}.`}
+            </p>
+            {filtersActive && (
+              <Button variant="outline" className="mt-4 mx-auto" onClick={() => { setQuery(''); setCategory('all'); }}>
+                Clear filters
+              </Button>
+            )}
           </Card>
         )}
+
       </div>
     </div>
   );
