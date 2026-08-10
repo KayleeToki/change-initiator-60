@@ -249,7 +249,16 @@ const BillsList = () => {
               </Select>
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+              <Info className="inline h-3.5 w-3.5 mr-1 -mt-0.5 text-primary" />
+              Keyword search only matches the exact wording used in a bill's official title or summary, so
+              everyday terms often return nothing. If you don't know a bill's number or exact wording, use the
+              <span className="text-foreground font-medium"> Category</span> and
+              <span className="text-foreground font-medium"> Sort by</span> dropdowns above to browse by topic
+              (education, environment, health, government &amp; elections) or by urgency instead.
+            </p>
+
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               <span>Try:</span>
               {EXAMPLE_SEARCHES.map((example) => (
                 <button
@@ -269,6 +278,7 @@ const BillsList = () => {
                 </button>
               )}
             </div>
+
 
             {!loading && !error && (
               <p className="mt-3 text-xs text-muted-foreground">
