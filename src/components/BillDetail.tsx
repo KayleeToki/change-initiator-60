@@ -77,7 +77,7 @@ const BillDetail = () => {
 
     fetchRelated();
     return () => { cancelled = true; };
-  }, [bill?.id, bill?.state]);
+  }, [bill?.bill_id, bill?.state]);
 
   
   const getUrgencyClass = (urgency: string) => {
@@ -202,17 +202,37 @@ const BillDetail = () => {
                     ]
                       .filter(Boolean)
                       .join(' · ');
+                    const alsoOn = sponsorBills[sponsor.sponsor_id] || [];
                     return (
                       <li
                         key={sponsor.sponsor_id || index}
-                        className="flex flex-wrap items-baseline gap-x-2 bg-card border rounded-md p-3"
+                        className="bg-card border rounded-md p-3"
                       >
-                        <span className="font-medium">{sponsor.sponsor_name}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {sponsor.sponsor_type}
-                        </Badge>
-                        {meta && (
-                          <span className="text-sm text-muted-foreground">{meta}</span>
+                        <div className="flex flex-wrap items-baseline gap-x-2">
+                          <span className="font-medium">{sponsor.sponsor_name}</span>
+                          <Badge variant="outline" className="text-xs">
+                            {sponsor.sponsor_type}
+                          </Badge>
+                          {meta && (
+                            <span className="text-sm text-muted-foreground">{meta}</span>
+                          )}
+                        </div>
+                        {alsoOn.length > 0 && (
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            See also:{' '}
+                            {alsoOn.map((other, i) => (
+                              <React.Fragment key={other.id}>
+                                {i > 0 && ', '}
+                                <button
+                                  type="button"
+                                  onClick={() => navigate(`/bill/${other.id}`)}
+                                  className="text-primary hover:underline"
+                                >
+                                  {other.bill_number}
+                                </button>
+                              </React.Fragment>
+                            ))}
+                          </p>
                         )}
                       </li>
                     );
