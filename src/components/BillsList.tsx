@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Bill, getBillsByState } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ArrowLeft, AlertTriangle, RefreshCw, Info } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, RefreshCw, Info, Search, X } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+
 
 type Category =
   | 'Education'
