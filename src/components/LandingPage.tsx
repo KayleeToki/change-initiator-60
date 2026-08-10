@@ -5,13 +5,13 @@ import { motion } from "framer-motion";
 import { ArrowRight } from 'lucide-react';
 import ravenSilhouette from "@/assets/raven-silhouette.png";
 import chessRook from "@/assets/chess-rook.png";
-import { openExternalLink } from '@/lib/externalLinks';
 
 const LandingPage = () => {
   const navigate = useNavigate();
 
   const handleYesClick = () => navigate('/map');
-  const handleNoClick = () => openExternalLink('https://www.google.com');
+
+
 
 
 
@@ -186,14 +186,17 @@ const LandingPage = () => {
 
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button
-              onClick={handleNoClick}
+              asChild
               variant="outline"
               size="lg"
               className="border-primary/40 text-foreground hover:bg-primary/10 hover:text-primary text-base font-medium tracking-wide px-8 py-6 rounded-md bg-transparent"
             >
-              No, take me away
+              <a href="https://www.google.com" target="_blank" rel="noopener noreferrer">
+                No, take me away
+              </a>
             </Button>
           </motion.div>
+
         </div>
       </motion.div>
 

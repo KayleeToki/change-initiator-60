@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Bill, getBillsByState } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ArrowLeft, AlertTriangle, RefreshCw, Info } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, RefreshCw, Info, Search, X } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+
 
 type Category =
   | 'Education'
@@ -55,12 +58,44 @@ const CATEGORY_COLORS: Record<Category, string> = {
   Other: 'bg-muted text-muted-foreground border border-border',
 };
 
+
+const CATEGORY_OPTIONS: Category[] = [
+  'Education',
+  'Environment',
+  'Health',
+  'Transportation',
+  'Public Safety',
+  'Economy & Taxes',
+  'Civil Rights',
+  'Government & Elections',
+  'Housing',
+  'Labor',
+  'Other',
+];
+
+const EXAMPLE_SEARCHES = ['environmental', 'education funding', 'emergency', 'voting rights', 'housing'];
+
+type SortOption = 'urgency' | 'emergency' | 'recent' | 'alphabetical';
+
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'urgency', label: 'Most time sensitive' },
+  { value: 'emergency', label: 'Emergency motions first' },
+  { value: 'recent', label: 'Most recent action' },
+  { value: 'alphabetical', label: 'Bill number (A–Z)' },
+];
+
+const EMERGENCY_PATTERN = /\b(emergenc|urgent|immediate|special session|expedite|declaration|disaster)\b/i;
+
 const BillsList = () => {
   const { state } = useParams<{ state: string }>();
   const navigate = useNavigate();
   const [bills, setBills] = useState<Bill[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [category, setCategory] = useState<'all' | Category>('all');
+  const [sortBy, setSortBy] = useState<SortOption>('urgency');
+
 
   useEffect(() => {
     const fetchBills = async () => {
@@ -87,6 +122,38 @@ const BillsList = () => {
     };
     fetchBills();
   }, [state]);
+
+  const visibleBills = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const filtered = bills.filter((bill) => {
+      const cat = categorize(bill);
+      if (category !== 'all' && cat !== category) return false;
+      if (!q) return true;
+      const haystack = `${bill.bill_number} ${bill.title} ${bill.description ?? ''} ${bill.status ?? ''} ${cat}`.toLowerCase();
+      return haystack.includes(q);
+    });
+
+    const urgencyOrder = { high: 0, medium: 1, low: 2 } as const;
+    const byDate = (a: Bill, b: Bill) =>
+      new Date(b.last_action_date).getTime() - new Date(a.last_action_date).getTime();
+
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'recent') return byDate(a, b);
+      if (sortBy === 'alphabetical') return (a.bill_number || '').localeCompare(b.bill_number || '');
+      if (sortBy === 'emergency') {
+        const emergencyScore = (bill: Bill) =>
+          EMERGENCY_PATTERN.test(`${bill.title} ${bill.description ?? ''} ${bill.status ?? ''}`) ? 0 : 1;
+        const diff = emergencyScore(a) - emergencyScore(b);
+        if (diff !== 0) return diff;
+      }
+      const urgencyDiff = urgencyOrder[a.urgency] - urgencyOrder[b.urgency];
+      if (urgencyDiff !== 0) return urgencyDiff;
+      return byDate(a, b);
+    });
+  }, [bills, query, category, sortBy]);
+
+  const filtersActive = query.trim() !== '' || category !== 'all';
+
 
   const formatDate = (dateString: string) => {
     if (!dateString) return 'No date available';
@@ -134,6 +201,85 @@ const BillsList = () => {
           </TooltipProvider>
         </div>
 
+        {/* Search & filter bar */}
+        <Card className="mb-8 bg-card/70 border-border">
+          <CardContent className="pt-6">
+            <div className="flex flex-col lg:flex-row gap-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search bills by topic, keyword, or bill number…"
+                  className="pl-9 pr-9"
+                  aria-label="Search bills"
+                />
+                {query && (
+                  <button
+                    onClick={() => setQuery('')}
+                    aria-label="Clear search"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+
+              <Select value={category} onValueChange={(v) => setCategory(v as 'all' | Category)}>
+                <SelectTrigger className="lg:w-56" aria-label="Filter by category">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All categories</SelectItem>
+                  {CATEGORY_OPTIONS.map((c) => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+                <SelectTrigger className="lg:w-56" aria-label="Sort bills">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SORT_OPTIONS.map((o) => (
+                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <span>Try:</span>
+              {EXAMPLE_SEARCHES.map((example) => (
+                <button
+                  key={example}
+                  onClick={() => setQuery(example)}
+                  className="rounded-full border border-primary/30 px-3 py-1 text-primary hover:bg-primary/10 transition-colors"
+                >
+                  {example}
+                </button>
+              ))}
+              {filtersActive && (
+                <button
+                  onClick={() => { setQuery(''); setCategory('all'); }}
+                  className="ml-auto underline hover:text-foreground"
+                >
+                  Clear filters
+                </button>
+              )}
+            </div>
+
+            {!loading && !error && (
+              <p className="mt-3 text-xs text-muted-foreground">
+                Showing {visibleBills.length} of {bills.length} bills
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+
+
         {loading ? (
           <div className="space-y-4 mt-4">
             {[1, 2, 3].map((i) => (
@@ -156,10 +302,10 @@ const BillsList = () => {
               </Button>
             </div>
           </Card>
-        ) : bills.length > 0 ? (
+        ) : visibleBills.length > 0 ? (
           <div className="space-y-4 mt-4">
-            {bills.map((bill) => {
-              const category = categorize(bill);
+            {visibleBills.map((bill) => {
+              const billCategory = categorize(bill);
               return (
                 <Card
                   key={bill.bill_id}
@@ -168,7 +314,7 @@ const BillsList = () => {
                 >
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xl font-semibold flex items-center gap-3 text-card-foreground">
-                      <Badge className={CATEGORY_COLORS[category]}>{category}</Badge>
+                      <Badge className={CATEGORY_COLORS[billCategory]}>{billCategory}</Badge>
                       {bill.bill_number}: {bill.title}
                     </CardTitle>
                   </CardHeader>
@@ -186,9 +332,19 @@ const BillsList = () => {
           </div>
         ) : (
           <Card className="w-full p-6 text-center mt-4">
-            <p className="text-muted-foreground">No bills found for {state}.</p>
+            <p className="text-muted-foreground">
+              {bills.length > 0
+                ? `No bills match your search in ${state}. Try a different keyword or category.`
+                : `No bills found for ${state}.`}
+            </p>
+            {filtersActive && (
+              <Button variant="outline" className="mt-4 mx-auto" onClick={() => { setQuery(''); setCategory('all'); }}>
+                Clear filters
+              </Button>
+            )}
           </Card>
         )}
+
       </div>
     </div>
   );

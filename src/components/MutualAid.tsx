@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MutualAidResource, getMutualAidByZipCode } from '@/lib/api';
+import { MutualAidResource, getMutualAidByZipCode, lookupZipCode, ZipLocation } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,14 +14,17 @@ const MutualAid = () => {
   const navigate = useNavigate();
   const [zipCode, setZipCode] = useState('');
   const [resources, setResources] = useState<MutualAidResource[]>([]);
+  const [location, setLocation] = useState<ZipLocation | null>(null);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
-  
+
   const handleSearch = async () => {
     if (zipCode.trim() === '') return;
-    
+
     setLoading(true);
     try {
+      const place = await lookupZipCode(zipCode);
+      setLocation(place);
       const data = await getMutualAidByZipCode(zipCode);
       setResources(data);
       setSearched(true);
@@ -31,6 +34,7 @@ const MutualAid = () => {
       setLoading(false);
     }
   };
+
   
   const getResourceIcon = (type: string) => {
     switch (type) {
@@ -67,7 +71,9 @@ const MutualAid = () => {
             <div className="flex gap-2">
               <Input
                 value={zipCode}
-                onChange={(e) => setZipCode(e.target.value)}
+                onChange={(e) => setZipCode(e.target.value.replace(/\D/g, '').slice(0, 5))}
+                inputMode="numeric"
+                maxLength={5}
                 placeholder="Enter ZIP code"
                 className="max-w-xs"
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -75,7 +81,7 @@ const MutualAid = () => {
               <Button onClick={handleSearch} disabled={loading}>
                 {loading ? (
                   <div className="flex items-center">
-                    <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2"></div>
                     Searching...
                   </div>
                 ) : (
@@ -85,7 +91,14 @@ const MutualAid = () => {
                 )}
               </Button>
             </div>
+            {location && !loading && (
+              <p className="mt-3 text-sm text-muted-foreground flex items-center">
+                <MapPin className="h-4 w-4 mr-2 text-primary" />
+                Showing resources for <span className="text-foreground font-medium mx-1">{location.city}, {location.stateAbbr}</span> ({location.zip})
+              </p>
+            )}
           </CardContent>
+
         </Card>
         
         {loading ? (

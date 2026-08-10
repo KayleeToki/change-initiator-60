@@ -283,14 +283,100 @@ export async function getBillById(id: string): Promise<Bill | null> {
   }
 }
 
-export async function getMutualAidByZipCode(zipCode: string): Promise<MutualAidResource[]> {
-  console.log(`Fetching mutual aid resources for ZIP: ${zipCode}`);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(MOCK_MUTUAL_AID);
-    }, 500);
-  });
+export interface ZipLocation {
+  zip: string;
+  city: string;
+  state: string;
+  stateAbbr: string;
 }
+
+export async function lookupZipCode(zipCode: string): Promise<ZipLocation | null> {
+  const zip = zipCode.trim();
+  if (!/^\d{5}$/.test(zip)) return null;
+
+  try {
+    const response = await fetch(`https://api.zippopotam.us/us/${zip}`);
+    if (!response.ok) return null;
+    const data = await response.json();
+    const place = data?.places?.[0];
+    if (!place) return null;
+    return {
+      zip,
+      city: place['place name'],
+      state: place['state'],
+      stateAbbr: place['state abbreviation'],
+    };
+  } catch (error) {
+    console.error('ZIP lookup failed:', error);
+    return null;
+  }
+}
+
+export async function getMutualAidByZipCode(zipCode: string): Promise<MutualAidResource[]> {
+  const location = await lookupZipCode(zipCode);
+  if (!location) {
+    toast.error('Please enter a valid 5-digit US ZIP code.');
+    return [];
+  }
+
+  const { zip, city, state, stateAbbr } = location;
+  const area = `${city}, ${stateAbbr}`;
+  const q = encodeURIComponent(`${city} ${stateAbbr} ${zip}`);
+
+  return [
+    {
+      id: `${zip}-food-bank`,
+      name: `Food Bank Locator — ${area}`,
+      type: 'food',
+      description: `Find Feeding America partner food banks and pantries serving ${area} and the surrounding ${state} area.`,
+      address: area,
+      contactInfo: 'Dial 211 for local food assistance',
+      url: `https://www.feedingamerica.org/find-your-local-foodbank?zip=${zip}`,
+    },
+    {
+      id: `${zip}-pantry`,
+      name: `Community Pantries near ${zip}`,
+      type: 'food',
+      description: `Directory of free pantries, soup kitchens, and food-sharing sites listed near ZIP ${zip}.`,
+      address: area,
+      url: `https://www.foodpantries.org/searchzip/${zip}`,
+    },
+    {
+      id: `${zip}-shelter`,
+      name: `Emergency Shelters — ${area}`,
+      type: 'shelter',
+      description: `Emergency shelters, transitional housing, and cold-weather beds serving ${area}.`,
+      address: area,
+      contactInfo: 'Dial 211 for shelter placement',
+      url: `https://www.homelessshelterdirectory.org/searchzip/${zip}`,
+    },
+    {
+      id: `${zip}-housing`,
+      name: `Housing & Utility Assistance — ${state}`,
+      type: 'shelter',
+      description: `Rent, utility, and eviction-prevention programs available to residents of ${area}.`,
+      address: `${state} statewide`,
+      url: `https://www.211.org/search/all?search=${q}`,
+    },
+    {
+      id: `${zip}-events`,
+      name: `Volunteer & Community Events near ${area}`,
+      type: 'event',
+      description: `Upcoming mutual aid drives, cleanups, and volunteer opportunities posted for ${area}.`,
+      address: area,
+      url: `https://www.volunteermatch.org/search?l=${q}`,
+    },
+    {
+      id: `${zip}-org`,
+      name: `Local Mutual Aid Networks — ${area}`,
+      type: 'other',
+      description: `Neighbor-to-neighbor mutual aid groups and community organizing hubs active around ${area}.`,
+      address: area,
+      url: `https://www.mutualaidhub.org/`,
+    },
+  ];
+}
+
 
 export async function getForumPosts(): Promise<ForumPost[]> {
   console.log("Fetching forum posts");
