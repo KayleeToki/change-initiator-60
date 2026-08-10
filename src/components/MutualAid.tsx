@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MutualAidResource, getMutualAidByZipCode } from '@/lib/api';
+import { MutualAidResource, getMutualAidByZipCode, lookupZipCode, ZipLocation } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,14 +14,17 @@ const MutualAid = () => {
   const navigate = useNavigate();
   const [zipCode, setZipCode] = useState('');
   const [resources, setResources] = useState<MutualAidResource[]>([]);
+  const [location, setLocation] = useState<ZipLocation | null>(null);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
-  
+
   const handleSearch = async () => {
     if (zipCode.trim() === '') return;
-    
+
     setLoading(true);
     try {
+      const place = await lookupZipCode(zipCode);
+      setLocation(place);
       const data = await getMutualAidByZipCode(zipCode);
       setResources(data);
       setSearched(true);
@@ -31,6 +34,7 @@ const MutualAid = () => {
       setLoading(false);
     }
   };
+
   
   const getResourceIcon = (type: string) => {
     switch (type) {
