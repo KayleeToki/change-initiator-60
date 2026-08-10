@@ -191,7 +191,7 @@ const LandingPage = () => {
               size="lg"
               className="border-primary/40 text-foreground hover:bg-primary/10 hover:text-primary text-base font-medium tracking-wide px-8 py-6 rounded-md bg-transparent"
             >
-              <a href="https://www.google.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.google.com/webhp?igu=1" target="_blank" rel="noopener noreferrer">
                 No, take me away
               </a>
             </Button>
