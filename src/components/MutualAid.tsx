@@ -45,12 +45,13 @@ const MutualAid = () => {
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <Button asChild
+          <Button
             variant="outline" 
             onClick={() => navigate('/')}
           >
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
           </Button>
+
           
           <h1 className="text-3xl font-bold">Mutual Aid Resources</h1>
         </div>
