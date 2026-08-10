@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Bill, getBillById } from '@/lib/api';
+import { Bill, getBillById, getBillsByState } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,15 +12,13 @@ import {
   FileText, 
   Users, 
   Download, 
-  Copy,
   Link, 
   AlertTriangle, 
   History 
 } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import ApiKeyForm from '@/components/ApiKeyForm';
-import { copyExternalLink, openExternalLink } from '@/lib/externalLinks';
-import { toast } from 'sonner';
+import { openExternalLink } from '@/lib/externalLinks';
 
 const BillDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,6 +26,7 @@ const BillDetail = () => {
   const [bill, setBill] = useState<Bill | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sponsorBills, setSponsorBills] = useState<Record<number, Array<{ id: string; bill_number: string }>>>({});
   
   useEffect(() => {
     const fetchBill = async () => {
@@ -51,6 +50,35 @@ const BillDetail = () => {
     
     fetchBill();
   }, [id]);
+
+  // Cross-reference: which other bills in this state share the same sponsors
+  useEffect(() => {
+    let cancelled = false;
+    const fetchRelated = async () => {
+      if (!bill?.state) return;
+      try {
+        const stateBills = await getBillsByState(bill.state);
+        const map: Record<number, Array<{ id: string; bill_number: string }>> = {};
+        stateBills.forEach((other) => {
+          if (String(other.bill_id) === String(bill.bill_id)) return;
+          (other.sponsors || []).forEach((s) => {
+            if (!s.sponsor_id) return;
+            const list = map[s.sponsor_id] || (map[s.sponsor_id] = []);
+            if (!list.some((b) => b.id === String(other.bill_id))) {
+              list.push({ id: String(other.bill_id), bill_number: other.bill_number });
+            }
+          });
+        });
+        if (!cancelled) setSponsorBills(map);
+      } catch (err) {
+        console.error("Failed to cross-reference sponsors:", err);
+      }
+    };
+
+    fetchRelated();
+    return () => { cancelled = true; };
+  }, [bill?.bill_id, bill?.state]);
+
   
   const getUrgencyClass = (urgency: string) => {
     switch (urgency) {
@@ -67,24 +95,7 @@ const BillDetail = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const handleLegiscanLink = async (url: string) => {
-    const copied = await copyExternalLink(url);
-    if (copied) {
-      toast.success('LegiScan address copied', {
-        description: 'Paste it into your browser address bar to open it outside the preview.',
-      });
-      return;
-    }
-
-    toast.error('Could not copy the LegiScan address');
-  };
-
   const handleExternalLink = (url: string) => {
-    if (/^https?:\/\/([^/]+\.)?legiscan\.com(?:\/|$)/i.test(url.trim())) {
-      void handleLegiscanLink(url);
-      return;
-    }
-
     openExternalLink(url);
   };
   
@@ -191,17 +202,37 @@ const BillDetail = () => {
                     ]
                       .filter(Boolean)
                       .join(' · ');
+                    const alsoOn = sponsorBills[sponsor.sponsor_id] || [];
                     return (
                       <li
                         key={sponsor.sponsor_id || index}
-                        className="flex flex-wrap items-baseline gap-x-2 bg-card border rounded-md p-3"
+                        className="bg-card border rounded-md p-3"
                       >
-                        <span className="font-medium">{sponsor.sponsor_name}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {sponsor.sponsor_type}
-                        </Badge>
-                        {meta && (
-                          <span className="text-sm text-muted-foreground">{meta}</span>
+                        <div className="flex flex-wrap items-baseline gap-x-2">
+                          <span className="font-medium">{sponsor.sponsor_name}</span>
+                          <Badge variant="outline" className="text-xs">
+                            {sponsor.sponsor_type}
+                          </Badge>
+                          {meta && (
+                            <span className="text-sm text-muted-foreground">{meta}</span>
+                          )}
+                        </div>
+                        {alsoOn.length > 0 && (
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            See also:{' '}
+                            {alsoOn.map((other, i) => (
+                              <React.Fragment key={other.id}>
+                                {i > 0 && ', '}
+                                <button
+                                  type="button"
+                                  onClick={() => navigate(`/bill/${other.id}`)}
+                                  className="text-primary hover:underline"
+                                >
+                                  {other.bill_number}
+                                </button>
+                              </React.Fragment>
+                            ))}
+                          </p>
                         )}
                       </li>
                     );
@@ -215,35 +246,14 @@ const BillDetail = () => {
             </div>
 
             
-            <Tabs defaultValue="details">
+            <Tabs defaultValue="documents">
               <TabsList className="mb-4">
-                <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="history">History</TabsTrigger>
                 <TabsTrigger value="documents">Documents</TabsTrigger>
+                <TabsTrigger value="history">History</TabsTrigger>
+                <TabsTrigger value="details">Details</TabsTrigger>
                 <TabsTrigger value="actions">Take Action</TabsTrigger>
               </TabsList>
-              
-              <TabsContent value="details" className="space-y-4">
-                <div className="bg-card p-4 rounded-lg border">
-                  <h4 className="font-medium">Current Status</h4>
-                  <p className="text-foreground/85">{bill.status}</p>
-                </div>
-                <div className="bg-card p-4 rounded-lg border">
-                  <h4 className="font-medium">State</h4>
-                  <p className="text-foreground/85">{bill.state}</p>
-                </div>
-                {bill.county && (
-                  <div className="bg-card p-4 rounded-lg border">
-                    <h4 className="font-medium">County</h4>
-                    <p className="text-foreground/85">{bill.county}</p>
-                  </div>
-                )}
-                <div className="bg-card p-4 rounded-lg border">
-                  <h4 className="font-medium">Last Action</h4>
-                  <p className="text-foreground/85">{bill.last_action}</p>
-                </div>
-              </TabsContent>
-              
+
               <TabsContent value="history">
                 {bill.history && bill.history.length > 0 ? (
                   <div className="space-y-2">
@@ -283,7 +293,7 @@ const BillDetail = () => {
                           <FileText className="h-4 w-4 mr-2" />
                           <span className="mr-2">Document {index + 1}</span>
                           <span className="text-primary ml-auto">
-                            {/legiscan\.com/i.test(url) ? <Copy className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                            <Download className="h-4 w-4" />
                           </span>
                         </Button>
                       ))}
@@ -302,7 +312,7 @@ const BillDetail = () => {
                       <FileText className="h-4 w-4 mr-2" />
                       <span className="mr-2">View Bill Text</span>
                       <span className="text-primary ml-auto">
-                        {/legiscan\.com/i.test(bill.text_url) ? <Copy className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                        <Download className="h-4 w-4" />
                       </span>
                     </Button>
                   </div>
@@ -323,11 +333,32 @@ const BillDetail = () => {
                       onClick={() => handleExternalLink(bill.url ?? '')}
                     >
                       <Link className="h-4 w-4 mr-2" />
-                      <span>{/legiscan\.com/i.test(bill.url) ? 'Copy Official Bill Page Link' : 'Visit Official Bill Page'}</span>
+                      <span>Visit Official Bill Page</span>
                     </Button>
 
                   </div>
                 )}
+              </TabsContent>
+              
+              <TabsContent value="details" className="space-y-4">
+                <div className="bg-card p-4 rounded-lg border">
+                  <h4 className="font-medium">Current Status</h4>
+                  <p className="text-foreground/85">{bill.status}</p>
+                </div>
+                <div className="bg-card p-4 rounded-lg border">
+                  <h4 className="font-medium">State</h4>
+                  <p className="text-foreground/85">{bill.state}</p>
+                </div>
+                {bill.county && (
+                  <div className="bg-card p-4 rounded-lg border">
+                    <h4 className="font-medium">County</h4>
+                    <p className="text-foreground/85">{bill.county}</p>
+                  </div>
+                )}
+                <div className="bg-card p-4 rounded-lg border">
+                  <h4 className="font-medium">Last Action</h4>
+                  <p className="text-foreground/85">{bill.last_action}</p>
+                </div>
               </TabsContent>
               
               <TabsContent value="actions">
