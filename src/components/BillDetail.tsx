@@ -26,6 +26,7 @@ const BillDetail = () => {
   const [bill, setBill] = useState<Bill | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sponsorBills, setSponsorBills] = useState<Record<number, Array<{ id: string; bill_number: string }>>>({});
   
   useEffect(() => {
     const fetchBill = async () => {
@@ -49,6 +50,35 @@ const BillDetail = () => {
     
     fetchBill();
   }, [id]);
+
+  // Cross-reference: which other bills in this state share the same sponsors
+  useEffect(() => {
+    let cancelled = false;
+    const fetchRelated = async () => {
+      if (!bill?.state) return;
+      try {
+        const stateBills = await getBillsByState(bill.state);
+        const map: Record<number, Array<{ id: string; bill_number: string }>> = {};
+        stateBills.forEach((other) => {
+          if (String(other.id) === String(bill.id)) return;
+          (other.sponsors || []).forEach((s) => {
+            if (!s.sponsor_id) return;
+            const list = map[s.sponsor_id] || (map[s.sponsor_id] = []);
+            if (!list.some((b) => b.id === String(other.id))) {
+              list.push({ id: String(other.id), bill_number: other.bill_number });
+            }
+          });
+        });
+        if (!cancelled) setSponsorBills(map);
+      } catch (err) {
+        console.error("Failed to cross-reference sponsors:", err);
+      }
+    };
+
+    fetchRelated();
+    return () => { cancelled = true; };
+  }, [bill?.id, bill?.state]);
+
   
   const getUrgencyClass = (urgency: string) => {
     switch (urgency) {
