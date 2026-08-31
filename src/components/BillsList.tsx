@@ -129,7 +129,7 @@ const BillsList = () => {
       const cat = categorize(bill);
       if (category !== 'all' && cat !== category) return false;
       if (!q) return true;
-      const haystack = `${bill.bill_number} ${bill.title} ${bill.description ?? ''} ${bill.status ?? ''} ${cat}`.toLowerCase();
+      const haystack = `${bill.bill_number} ${(bill.aliases ?? []).join(' ')} ${bill.title} ${bill.description ?? ''} ${bill.status ?? ''} ${cat}`.toLowerCase();
       return haystack.includes(q);
     });
 
