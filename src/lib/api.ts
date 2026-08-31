@@ -171,8 +171,7 @@ export async function getBillsByState(state: string): Promise<Bill[]> {
       throw new Error(`API Error: ${data.status}`);
     }
     
-    // Process the master list — sort by most recent activity first
-    const billsList: Bill[] = [];
+    // Process the master list — every bill in the session, sorted by most recent activity
     const masterList = data.masterlist || {};
 
     const entries = Object.keys(masterList)
@@ -185,13 +184,28 @@ export async function getBillsByState(state: string): Promise<Bill[]> {
         return (b.bill_id || 0) - (a.bill_id || 0);
       });
 
-    // Limit to the 12 most recently active bills for performance
-    for (const item of entries.slice(0, 12)) {
-      const detailedBill = await getBillById(item.bill_id.toString());
-      if (detailedBill) billsList.push(detailedBill);
-    }
+    const billsList: Bill[] = entries.map((item: any) => {
+      const number: string = item.number || '';
+      return {
+        bill_id: item.bill_id.toString(),
+        bill_number: number,
+        title: decodeEntities(item.title || ''),
+        description: decodeEntities(item.description || item.title || ''),
+        state: stateAbbreviation,
+        state_id: 0,
+        urgency: calculateUrgency(item.last_action_date),
+        last_action_date: item.last_action_date || '',
+        last_action: item.last_action || '',
+        status: STATUS_LABELS[item.status] || 'Pending',
+        sponsors: [],
+        url: item.url,
+        aliases: buildNumberAliases(number),
+        history: [],
+      };
+    });
 
     return billsList;
+
 
   } catch (error) {
     console.error("Failed to fetch bills:", error);
