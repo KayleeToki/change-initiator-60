@@ -137,6 +137,34 @@ const MOCK_FORUM_POSTS: ForumPost[] = [
   }
 ];
 
+const STATUS_LABELS: Record<number, string> = {
+  1: 'Introduced',
+  2: 'Engrossed',
+  3: 'Enrolled',
+  4: 'Passed',
+  5: 'Vetoed',
+  6: 'Failed / Died',
+};
+
+const decodeEntities = (value: string): string => {
+  const el = document.createElement('textarea');
+  el.innerHTML = value;
+  return el.value;
+};
+
+// LegiScan formats numbers like "H1003" / "S0022"; users often type "HB1003" / "SB22"
+const buildNumberAliases = (number: string): string[] => {
+  const match = number.match(/^([A-Z]+)0*(\d+)$/i);
+  if (!match) return [number];
+  const [, prefix, digits] = match;
+  const aliases = new Set<string>([number, `${prefix}${digits}`]);
+  if (/^[HS]$/i.test(prefix)) {
+    aliases.add(`${prefix}B${digits}`);
+    aliases.add(`${prefix}B${digits.padStart(4, '0')}`);
+  }
+  return [...aliases];
+};
+
 // Helper function to calculate bill urgency based on last action date
 const calculateUrgency = (lastActionDate: string): 'high' | 'medium' | 'low' => {
   const today = new Date();
@@ -150,6 +178,7 @@ const calculateUrgency = (lastActionDate: string): 'high' | 'medium' | 'low' => 
 };
 
 // LegiScan API Functions
+
 export async function getBillsByState(state: string): Promise<Bill[]> {
   console.log(`Fetching bills for state: ${state}`);
 
