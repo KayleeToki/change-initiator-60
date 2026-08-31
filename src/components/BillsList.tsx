@@ -286,7 +286,7 @@ const BillsList = () => {
 
             {!loading && !error && (
               <p className="mt-3 text-xs text-muted-foreground">
-                Showing {visibleBills.length} of {bills.length} bills
+                Showing {shownBills.length} of {visibleBills.length} matching bills ({bills.length} total this session)
               </p>
             )}
           </CardContent>
