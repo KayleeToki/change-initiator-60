@@ -95,6 +95,7 @@ const BillsList = () => {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<'all' | Category>('all');
   const [sortBy, setSortBy] = useState<SortOption>('urgency');
+  const [limit, setLimit] = useState(25);
 
 
   useEffect(() => {
@@ -129,7 +130,7 @@ const BillsList = () => {
       const cat = categorize(bill);
       if (category !== 'all' && cat !== category) return false;
       if (!q) return true;
-      const haystack = `${bill.bill_number} ${bill.title} ${bill.description ?? ''} ${bill.status ?? ''} ${cat}`.toLowerCase();
+      const haystack = `${bill.bill_number} ${(bill.aliases ?? []).join(' ')} ${bill.title} ${bill.description ?? ''} ${bill.status ?? ''} ${cat}`.toLowerCase();
       return haystack.includes(q);
     });
 
@@ -152,6 +153,9 @@ const BillsList = () => {
     });
   }, [bills, query, category, sortBy]);
 
+  useEffect(() => { setLimit(25); }, [query, category, sortBy]);
+
+  const shownBills = visibleBills.slice(0, limit);
   const filtersActive = query.trim() !== '' || category !== 'all';
 
 
@@ -282,7 +286,7 @@ const BillsList = () => {
 
             {!loading && !error && (
               <p className="mt-3 text-xs text-muted-foreground">
-                Showing {visibleBills.length} of {bills.length} bills
+                Showing {shownBills.length} of {visibleBills.length} matching bills ({bills.length} total this session)
               </p>
             )}
           </CardContent>
@@ -314,7 +318,7 @@ const BillsList = () => {
           </Card>
         ) : visibleBills.length > 0 ? (
           <div className="space-y-4 mt-4">
-            {visibleBills.map((bill) => {
+            {shownBills.map((bill) => {
               const billCategory = categorize(bill);
               return (
                 <Card
@@ -339,7 +343,13 @@ const BillsList = () => {
                 </Card>
               );
             })}
+            {shownBills.length < visibleBills.length && (
+              <Button variant="outline" className="mx-auto block" onClick={() => setLimit((l) => l + 25)}>
+                Load 25 more ({visibleBills.length - shownBills.length} remaining)
+              </Button>
+            )}
           </div>
+
         ) : (
           <Card className="w-full p-6 text-center mt-4">
             <p className="text-muted-foreground">
