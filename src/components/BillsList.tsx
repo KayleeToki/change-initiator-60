@@ -95,6 +95,7 @@ const BillsList = () => {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<'all' | Category>('all');
   const [sortBy, setSortBy] = useState<SortOption>('urgency');
+  const [limit, setLimit] = useState(25);
 
 
   useEffect(() => {
