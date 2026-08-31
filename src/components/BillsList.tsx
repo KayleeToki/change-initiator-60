@@ -153,6 +153,9 @@ const BillsList = () => {
     });
   }, [bills, query, category, sortBy]);
 
+  useEffect(() => { setLimit(25); }, [query, category, sortBy]);
+
+  const shownBills = visibleBills.slice(0, limit);
   const filtersActive = query.trim() !== '' || category !== 'all';
 
 
