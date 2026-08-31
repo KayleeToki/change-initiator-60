@@ -318,7 +318,7 @@ const BillsList = () => {
           </Card>
         ) : visibleBills.length > 0 ? (
           <div className="space-y-4 mt-4">
-            {visibleBills.map((bill) => {
+            {shownBills.map((bill) => {
               const billCategory = categorize(bill);
               return (
                 <Card
@@ -343,7 +343,13 @@ const BillsList = () => {
                 </Card>
               );
             })}
+            {shownBills.length < visibleBills.length && (
+              <Button variant="outline" className="mx-auto block" onClick={() => setLimit((l) => l + 25)}>
+                Load 25 more ({visibleBills.length - shownBills.length} remaining)
+              </Button>
+            )}
           </div>
+
         ) : (
           <Card className="w-full p-6 text-center mt-4">
             <p className="text-muted-foreground">
