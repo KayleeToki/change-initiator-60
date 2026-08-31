@@ -171,27 +171,28 @@ export async function getBillsByState(state: string): Promise<Bill[]> {
       throw new Error(`API Error: ${data.status}`);
     }
     
-    // Process the master list
+    // Process the master list — sort by most recent activity first
     const billsList: Bill[] = [];
     const masterList = data.masterlist || {};
-    
-    // Limit to first 10 bills for performance (can be adjusted)
-    let count = 0;
-    for (const key in masterList) {
-      if (key !== 'session' && masterList.hasOwnProperty(key) && count < 10) {
-        const item = masterList[key];
-        
-        // Get detailed bill information for each bill
-        const detailedBill = await getBillById(item.bill_id.toString());
-        
-        if (detailedBill) {
-          billsList.push(detailedBill);
-          count++;
-        }
-      }
+
+    const entries = Object.keys(masterList)
+      .filter((key) => key !== 'session' && masterList[key]?.bill_id)
+      .map((key) => masterList[key])
+      .sort((a: any, b: any) => {
+        const dateA = new Date(a.last_action_date || 0).getTime();
+        const dateB = new Date(b.last_action_date || 0).getTime();
+        if (dateB !== dateA) return dateB - dateA;
+        return (b.bill_id || 0) - (a.bill_id || 0);
+      });
+
+    // Limit to the 12 most recently active bills for performance
+    for (const item of entries.slice(0, 12)) {
+      const detailedBill = await getBillById(item.bill_id.toString());
+      if (detailedBill) billsList.push(detailedBill);
     }
-    
+
     return billsList;
+
   } catch (error) {
     console.error("Failed to fetch bills:", error);
     toast.error("Failed to fetch bills. Please try again later.");
