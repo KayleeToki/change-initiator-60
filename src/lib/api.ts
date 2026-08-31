@@ -34,6 +34,7 @@ export interface Bill {
     documents?: string[];
   };
   url?: string;
+  aliases?: string[];
   text_url?: string;
   history?: Array<{
     date: string;
