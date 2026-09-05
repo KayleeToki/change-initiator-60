@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap');
+
+:root {
+  --background: #022c22;
+  --foreground: #fefce8;
+  --muted: #064e3b;
+  --accent: #eab308;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Libre Baskerville', Georgia, serif;
+}
+
+a {
+  color: var(--accent);
+}
+
+a:hover {
+  text-decoration: underline;
+}
