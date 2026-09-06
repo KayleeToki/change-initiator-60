@@ -1,7 +1,10 @@
 import type { Bill } from '@/types'
 
 const LEGISCAN_API_URL = 'https://api.legiscan.com/'
-const API_KEY = import.meta.env.VITE_LEGISCAN_API_KEY
+// Default LegiScan key so the app works out of the box.
+// Replace with your own LegiScan key (or move it server-side via the edge proxy).
+const DEFAULT_LEGISCAN_API_KEY = 'e9117f10376dda025b85705917ec997e'
+const API_KEY = import.meta.env.VITE_LEGISCAN_API_KEY || DEFAULT_LEGISCAN_API_KEY
 const USE_PROXY = import.meta.env.VITE_USE_EDGE_PROXY === 'true'
 
 const STATUS_LABELS: Record<number, string> = {
